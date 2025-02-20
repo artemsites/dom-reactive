@@ -1,17 +1,17 @@
 /**
  * useDom.js
  */
-import mitt from "./node_modules/mitt/dist/mitt.mjs";
 // import mitt from "mitt";
+import mitt from "./node_modules/mitt/dist/mitt.mjs";
 const emitter = mitt();
 
 let stateNames = new Map();
 
 export function createApp(app, id) {
   const wrapper = document.getElementById(id);
-  console.log("wrapper: ", wrapper);
+
   if (wrapper) {
-    const header = app();
+    const appInstance = app();
 
     const $classes = wrapper.querySelectorAll("[data-class]");
     $classes.forEach(($el) => {
@@ -23,17 +23,17 @@ export function createApp(app, id) {
 
       for (let className in classList) {
         let propname = classList[className].split(".").pop();
-        const state = header[propname];
+        const state = appInstance[propname];
         toggleClass(state, className, $el);
 
-        let stateName = stateNames.get(header[propname]);
+        let stateName = stateNames.get(appInstance[propname]);
         emitter.on(stateName, (newState) => {
           toggleClass(newState, className, $el);
         });
       }
     });
 
-    window.header = header;
+    window[id] = appInstance;
   } else {
     throw Error("Нет wrapper: #" + id);
   }
