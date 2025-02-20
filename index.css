@@ -1,0 +1,8 @@
+.target {
+  height: 0;
+  overflow: hidden;
+}
+
+.target.active {
+  height: 100px;
+}
