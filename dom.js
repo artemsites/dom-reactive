@@ -1,7 +1,7 @@
 /**
  * useDom.js
  */
-import mitt from "mitt";
+import mitt from "./node_modules/mitt/dist/mitt.mjs";
 // import mitt from "mitt";
 const emitter = mitt();
 

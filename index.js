@@ -1,4 +1,4 @@
-import { createApp, useState } from "./useDom.js";
+import { createApp, useState } from "./dom.js";
 
 createApp(() => {
   let [isNavMobileActive, setIsNavMobileActive] = useState(false);
