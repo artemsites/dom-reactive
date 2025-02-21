@@ -1,5 +1,6 @@
 /**
- * useDom.js
+ * useDom
+ * useState
  */
 // import mitt from "mitt";
 import mitt from "./node_modules/mitt/dist/mitt.mjs";
