@@ -95,8 +95,8 @@ function toggleClass(state, className, where, isRevertVal = false) {
 
   if (valLoc) {
     if (Array.isArray(className)) {
-      where.classList.add(className[0]);
       where.classList.remove(className[1]);
+      where.classList.add(className[0]);
     } else {
       where.classList.add(className);
     }
