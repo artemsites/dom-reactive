@@ -2,9 +2,9 @@
  * useDom - создание приложения
  * ref - реактивное состояние
  */
-// import mitt from "mitt";
+import mitt from "mitt";
+// import mitt from "../node_modules/mitt/index";
 // import mitt from "../node_modules/mitt/dist/mitt.mjs";
-import mitt from "../node_modules/mitt/index";
 
 interface State {
   value: boolean;

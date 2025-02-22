@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite + TS</title>
+
+  <link rel="stylesheet" href="./src/index.css">
+  <script type="module" src="./src/index.js" defer></script>
+
+</head>
+
+<body>
+  <header id="header">
+
+    <button onclick="header.open()">
+      open
+    </button>
+
+    <button onclick="header.close()">
+      close
+    </button>
+
+    <div class="target" data-class='{"active": "header.isActive", "active-not": "!header.isActive"}'>
+      test data-class Object JSON
+    </div>
+
+    <div class="target" data-class='["header.isActive ? active : active-not", "!header.isActive ? test-not : test"]'>
+      test data-class Array JSON
+    </div>
+
+  </header>
+</body>
+
+</html>
