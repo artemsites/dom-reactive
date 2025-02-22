@@ -13,6 +13,6 @@
     "vite": "^6.1.0"
   },
   "dependencies": {
-    "dom-reactive": "^1.0.11"
+    "dom-reactive": "^1.0.13"
   }
 }

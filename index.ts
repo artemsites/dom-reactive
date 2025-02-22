@@ -7,11 +7,6 @@
  * ref - reactive state
  * data-class is an attribute of an HTML element for dynamic class management
  */
-
-// @note for browser js module
-// import mitt from "../node_modules/mitt/dist/mitt.mjs";
-
-// @note for vite compile
 import mitt from "mitt";
 
 interface State {

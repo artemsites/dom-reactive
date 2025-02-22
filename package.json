@@ -2,9 +2,20 @@
   "name": "dom-reactive",
   "version": "1.0.13",
   "description": "A library for working with DOM with syntax similar to Vue.",
-  "main": "index.ts",
-  "module": "dom-reactive.mjs",
-  "types": "index.d.ts",
+  "main": "./index.ts",
+  "module": "./index.mjs",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    }
+  },
+  "files": [
+    "./index.mjs",
+    "./index.js",
+    "./index.d.ts"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/artemsites/dom-reactive.git"
@@ -12,12 +23,6 @@
   "scripts": {
     "build": "vite build"
   },
-  "files": [
-    "index.mjs",
-    "index.mjs.map",
-    "index.ts",
-    "index.d.ts"
-  ],
   "keywords": [
     "Working",
     "native",
