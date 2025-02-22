@@ -1,15 +1,23 @@
 {
   "name": "dom-reactive",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A library for working with DOM with syntax similar to Vue.",
   "main": "index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "module": "dom-reactive.mjs",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/artemsites/dom-reactive.git"
   },
+  "scripts": {
+    "build": "vite build"
+  },
+  "files": [
+    "index.mjs",
+    "index.mjs.map",
+    "index.ts",
+    "index.d.ts"
+  ],
   "keywords": [
     "Working",
     "native",
@@ -27,6 +35,11 @@
     "url": "https://github.com/artemsites/dom-reactive/issues"
   },
   "homepage": "https://github.com/artemsites/dom-reactive#readme",
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^6.1.1",
+    "vite-plugin-dts": "^4.5.0"
+  },
   "dependencies": {
     "mitt": "^3.0.1"
   }

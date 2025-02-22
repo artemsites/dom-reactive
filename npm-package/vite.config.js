@@ -3,6 +3,8 @@ import dts from "vite-plugin-dts";
 import { copyFileSync } from "fs";
 import path from "path";
 
+// const dist = "../npm-package/dist";
+
 export default defineConfig({
   build: {
     lib: {
