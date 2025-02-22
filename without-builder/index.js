@@ -1,4 +1,4 @@
-import { createScope, ref } from "dom-reactive";
+import { createScope, ref } from "./dom-reactive.es.js";
 
 createScope("header", () => {
   let isActive = ref(false);
