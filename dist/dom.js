@@ -2,10 +2,10 @@
  * useDom - создание приложения
  * ref - реактивное состояние
  */
-// @note for vite compile
-// import mitt from "mitt";
 // @note for browser js module
 import mitt from "../node_modules/mitt/dist/mitt.mjs";
+// @note for vite compile
+// import mitt from "mitt";
 // @note for tsc compile
 // import mitt from "../node_modules/mitt/index";
 const emitter = mitt();
