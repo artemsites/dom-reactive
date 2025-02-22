@@ -1,16 +1,14 @@
 /**
- * useDom - создание приложения
+ * createScope - создание обасти в DOM для работы с библиотекой
  * ref - реактивное состояние
+ * data-class - атрибут HTML элемента для динамического управления классами
  */
 
 // @note for browser js module
 // import mitt from "../node_modules/mitt/dist/mitt.mjs";
 
 // @note for vite compile
-// import mitt from "mitt";
-
-// @note for tsc compile
-import mitt from "../node_modules/mitt/index";
+import mitt from "mitt";
 
 interface State {
   value: boolean;
@@ -26,17 +24,17 @@ const emitter = mitt();
 
 let stateNamesHashes = new Map();
 
-export function useDom(app: () => void, htmlId: string) {
-  const wrapper = document.getElementById(htmlId);
+export function createScope(scopeId: string, scopeApp: () => void) {
+  const wrapper = document.getElementById(scopeId);
 
   if (wrapper) {
-    const appInstance = app();
+    const appInstance = scopeApp();
 
     handlerClasses(wrapper, appInstance);
 
-    window[htmlId] = appInstance;
+    window[scopeId] = appInstance;
   } else {
-    throw Error("Нет wrapper: #" + htmlId);
+    throw Error("Нет wrapper: #" + scopeId);
   }
 }
 

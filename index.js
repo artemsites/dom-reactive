@@ -1,6 +1,6 @@
-import { useDom, ref } from "./dist/dom.js";
+import { createScope, ref } from "./dist/dom.js";
 
-useDom(() => {
+createScope("header", () => {
   let isActive = ref(false);
 
   function open() {
@@ -16,4 +16,4 @@ useDom(() => {
     open,
     close,
   };
-}, "header");
+});

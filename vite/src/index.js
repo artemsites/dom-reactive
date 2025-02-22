@@ -1,6 +1,6 @@
-import { useDom, ref } from "../../src/dom.ts";
+import { createScope, ref } from "../../src/dom.ts";
 
-useDom(() => {
+createScope("header", () => {
   let isActive = ref(false);
 
   function open() {
@@ -16,4 +16,4 @@ useDom(() => {
     open,
     close,
   };
-}, "header");
+});

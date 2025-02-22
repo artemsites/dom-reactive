@@ -8,9 +8,9 @@
 
 ## Инициализация приложения в js
 ```js
-import { useDom, ref } from "./dist/dom.js";
+import { createScope, ref } from "./dist/dom.js";
 
-useDom(() => {
+createScope(() => {
   let isActive = ref(false);
 
   function open() {
@@ -57,18 +57,20 @@ useDom(() => {
 ```
 
 
+## API
+ * `createScope` - создание обасти в DOM для работы с библиотекой
+ * `ref` - реактивное состояние
+ * `data-class` - атрибут HTML элемента для динамического управления классами
+
 
 ## TODO:
 Избавиться от переключений в src/dom.ts
 ```ts
+// @note for browser js module
+import mitt from "../node_modules/mitt/dist/mitt.mjs";
+
 // @note for vite compile
 import mitt from "mitt";
-
-// @note for browser js module
-// import mitt from "../node_modules/mitt/dist/mitt.mjs";
-
-// @note for tsc compile
-// import mitt from "../node_modules/mitt/index";
 ```
 * То есть сделать билд библиотеки вместе с зависимостями? (вместе в mitt)   
 * Или сделать правильный путь к зависимостям? (import mitt from "../node_modules/mitt/dist/mitt.mjs")   
