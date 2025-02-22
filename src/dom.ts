@@ -1,4 +1,8 @@
 /**
+ * @source https://github.com/artemsites/dom
+ * @source https://gitverse.ru/artemsites/dom
+ *
+ * @api:
  * createScope - создание обасти в DOM для работы с библиотекой
  * ref - реактивное состояние
  * data-class - атрибут HTML элемента для динамического управления классами
