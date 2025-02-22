@@ -1,3 +1,7 @@
+/**
+ * useDom - создание приложения
+ * ref - реактивное состояние
+ */
 declare global {
     interface Window {
         [key: string]: any;
