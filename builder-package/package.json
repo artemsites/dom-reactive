@@ -1,0 +1,19 @@
+{
+  "name": "builder-package",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build-package": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "vite": "^6.1.1"
+  },
+  "dependencies": {
+    "mitt": "^3.0.1"
+  }
+}
