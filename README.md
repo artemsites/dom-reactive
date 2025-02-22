@@ -1,12 +1,12 @@
-# Библиотека "Dom" - краткая суть
- 1. Библиотека работает с настоящим DOM деревом.
-  > В отличи от Vue и React которые работают  с виртуальным DOM и затем рендарят результаты в настоящий DOM!
- 2. Используется валидное HTML API, в следствии этого библиотека не создаёт ошибок валидации https://validator.w3.org/
-  > В отличи от Vue который если применять в HTML разметке классического сайта - создаёт ошибки валидации HTML!
+# Dom Library - a brief summary
+ 1. The library works with a real DOM tree.
+  > > Unlike Vue and React, which work with a virtual DOM and then render the results to the real DOM!
+2. A valid HTML API is used, as a result, the library does not create validation errors https://validator.w3.org /
+> Unlike Vue, which, when used in the HTML markup of a classic website, creates HTML validation errors!
 
 
 
-## Инициализация приложения в js
+## Initializing the application in js
 ```js
 import { createScope, ref } from "./dist/dom.js";
 
@@ -30,10 +30,8 @@ createScope(() => {
 
 ```
 
-
-
-## Использование приложения в html
-> Важно: каждое приложение является объектом под названием id на которое создаётся приложение, например "header":
+## Using the application in html
+Important: each application is an object called the id for which the application is created, for example, "header":
 ```html
   <header id="header">
 
@@ -58,13 +56,13 @@ createScope(() => {
 
 
 ## API
- * `createScope` - создание обасти в DOM для работы с библиотекой
- * `ref` - реактивное состояние
- * `data-class` - атрибут HTML элемента для динамического управления классами
-
+* `createScope' - creating an area in the DOM for working with the library
+* `ref` - reactive state
+* `data-class` is an attribute of an HTML element for dynamic class management
 
 ## TODO:
-Избавиться от переключений в src/dom.ts
+Get rid of switches in src/dom.ts
+
 ```ts
 // @note for browser js module
 import mitt from "../node_modules/mitt/dist/mitt.mjs";
@@ -72,5 +70,5 @@ import mitt from "../node_modules/mitt/dist/mitt.mjs";
 // @note for vite compile
 import mitt from "mitt";
 ```
-* То есть сделать билд библиотеки вместе с зависимостями? (вместе в mitt)   
-* Или сделать правильный путь к зависимостям? (import mitt from "../node_modules/mitt/dist/mitt.mjs")   
+* In other words, make a library build along with dependencies? (together at MITT)   
+* * Or make the right path to dependencies? (import mitt from "../node_modules/mitt/dist/mitt.mjs")

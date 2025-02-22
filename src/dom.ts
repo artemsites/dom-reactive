@@ -3,9 +3,9 @@
  * @source https://gitverse.ru/artemsites/dom
  *
  * @api:
- * createScope - создание обасти в DOM для работы с библиотекой
- * ref - реактивное состояние
- * data-class - атрибут HTML элемента для динамического управления классами
+ * createScope - creating an object in the DOM for working with the library
+ * ref - reactive state
+ * data-class is an attribute of an HTML element for dynamic class management
  */
 
 // @note for browser js module
