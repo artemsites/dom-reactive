@@ -1,11 +1,6 @@
 {
-  "scripts": {
-    "tsc": "tsc --project ./tsconfig.json",
-    "tsc_min": "tsc --project ./tsconfig.json && terser dist/dom.js -o dist/dom.min.js",
-    "min": "terser dist/dom.js -o dist/dom.min.js"
-  },
   "dependencies": {
-    "dom-reactive": "^1.0.2",
+    "dom-reactive": "^1.0.7",
     "mitt": "^3.0.1"
   },
   "devDependencies": {

@@ -2,16 +2,28 @@
   "name": "builder-package",
   "version": "1.0.0",
   "main": "index.js",
+  "module": "dom-reactive.mjs",
+  "types": "index.d.ts",
   "scripts": {
-    "build-package": "vite build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "vite build",
+    "test_build": "tsc",
+    "test_tsc": "tsc --project ./tsconfig.json",
+    "test_tsc_min": "tsc --project ./tsconfig.json && terser dist/dom.js -o dist/dom.min.js",
+    "test_min": "terser dist/dom.js -o dist/dom.min.js"
   },
+  "files": [
+    "dom-reactive.mjs",
+    "index.js",
+    "index.d.ts"
+  ],
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "description": "",
   "devDependencies": {
-    "vite": "^6.1.1"
+    "typescript": "^5.7.3",
+    "vite": "^6.1.1",
+    "vite-plugin-dts": "^4.5.0"
   },
   "dependencies": {
     "mitt": "^3.0.1"
