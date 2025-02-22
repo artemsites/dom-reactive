@@ -8,7 +8,11 @@
 
 ## Initializing the application in js
 ```js
-import { createScope, ref } from "dom-reactive";
+// without builder
+import { createScope, ref } from "./node_modules/dom-reactive/index.mjs";
+
+// with builder
+// import { createScope, ref } from "dom-reactive";
 
 createScope(() => {
   let isActive = ref(false);
@@ -62,18 +66,3 @@ Important: each application is an object called the id for which the application
 * `createScope' - creating an area in the DOM for working with the library
 * `ref` - reactive state
 * `data-class` is an attribute of an HTML element for dynamic class management
-
-
-
-## TODO:
-Get rid of switches in src/dom.ts
-
-```ts
-// @note for browser js module
-import mitt from "../node_modules/mitt/dist/mitt.mjs";
-
-// @note for vite compile
-import mitt from "mitt";
-```
-* In other words, make a library build along with dependencies? (together at MITT)   
-* Or make the right path to dependencies? (import mitt from "../node_modules/mitt/dist/mitt.mjs")   
