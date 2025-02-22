@@ -5,6 +5,7 @@
     "min": "terser dist/dom.js -o dist/dom.min.js"
   },
   "dependencies": {
+    "dom-reactive": "^1.0.2",
     "mitt": "^3.0.1"
   },
   "devDependencies": {
