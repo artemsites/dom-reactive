@@ -1,4 +1,4 @@
-import { useDom, ref } from "./dom.js";
+import { useDom, ref } from "./dist/dom.js";
 
 useDom(() => {
   let isActive = ref(false);

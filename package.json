@@ -1,5 +1,14 @@
 {
+  "scripts": {
+    "tsc": "tsc --project ./tsconfig.json",
+    "tsc_min": "tsc --project ./tsconfig.json && terser dist/dom.js -o dist/dom.min.js",
+    "min": "terser dist/dom.js -o dist/dom.min.js"
+  },
   "dependencies": {
     "mitt": "^3.0.1"
+  },
+  "devDependencies": {
+    "terser": "^5.39.0",
+    "typescript": "^5.7.3"
   }
 }
