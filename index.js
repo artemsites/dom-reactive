@@ -1,4 +1,4 @@
-import { createScope, ref } from "./dist/dom.js";
+import { createScope, ref } from "dom-reactive";
 
 createScope("header", () => {
   let isActive = ref(false);

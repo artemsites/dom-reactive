@@ -8,7 +8,7 @@
 
 ## Initializing the application in js
 ```js
-import { createScope, ref } from "./dist/dom.js";
+import { createScope, ref } from "dom-reactive";
 
 createScope(() => {
   let isActive = ref(false);

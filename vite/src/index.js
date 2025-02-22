@@ -1,4 +1,4 @@
-import { createScope, ref } from "../../src/dom.ts";
+import { createScope, ref } from "dom-reactive";
 
 createScope("header", () => {
   let isActive = ref(false);
