@@ -1,6 +1,6 @@
 # Dom Library - a brief summary
 1. The library works with a real DOM tree.
-> Unlike Vue and React, which work with a virtual DOM and then render the results to the real DOM!
+> Unlike Vue, which work with a virtual DOM and then render the results to the real DOM!
 2. A valid HTML API is used, as a result, the library does not create validation errors https://validator.w3.org /
 > Unlike Vue, which, when used in the HTML markup of a classic website, creates HTML validation errors!
 
@@ -8,13 +8,13 @@
 
 ## Initializing the application in js
 ```js
-// without builder
+// js module for web browser WITHOUT builder
 import { createScope, ref } from "./node_modules/dom-reactive/index.mjs";
 
-// with builder
-// import { createScope, ref } from "dom-reactive";
+// js module for web browser WITH builder
+import { createScope, ref } from "dom-reactive";
 
-createScope(() => {
+createScope("header", () => {
   let isActive = ref(false);
 
   function open() {
@@ -30,7 +30,7 @@ createScope(() => {
     open,
     close,
   };
-}, "header");
+});
 
 ```
 
@@ -63,6 +63,6 @@ Important: each application is an object called the id for which the application
 
 
 ## API
-* `createScope' - creating an area in the DOM for working with the library
+* `createScope` - creating an area in the DOM for working with the library
 * `ref` - reactive state
 * `data-class` is an attribute of an HTML element for dynamic class management
