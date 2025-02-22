@@ -39,6 +39,11 @@ createScope("header", () => {
 ## Using the application in html
 Important: each application is an object called the id for which the application is created, for example, "header":
 ```html
+<head>
+  <script type="module" src="./index.js" defer></script>
+</head>
+
+<body>
   <header id="header">
 
     <button onclick="header.open()">
@@ -58,6 +63,7 @@ Important: each application is an object called the id for which the application
     </div>
 
   </header>
+</body>
 ```
 
 
