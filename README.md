@@ -1,7 +1,7 @@
 # Dom Library - a brief summary
 1. The library works with a real DOM tree.
 > Unlike Vue, which work with a virtual DOM and then render the results to the real DOM!
-2. A valid HTML API is used, as a result, the library does not create validation errors https://validator.w3.org /
+2. A valid HTML API is used, as a result, the library does not create validation errors https://validator.w3.org
 > Unlike Vue, which, when used in the HTML markup of a classic website, creates HTML validation errors!
 
 
