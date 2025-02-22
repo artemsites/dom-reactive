@@ -1,0 +1,32 @@
+{
+  "name": "dom-reactive",
+  "version": "1.0.2",
+  "description": "A library for working with DOM with syntax similar to Vue.",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artemsites/dom-reactive.git"
+  },
+  "keywords": [
+    "Working",
+    "native",
+    "HTML",
+    "DOM",
+    "With",
+    "syntax",
+    "similar",
+    "Vue"
+  ],
+  "author": "Artem Kuznecov (ArtemSites)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/artemsites/dom-reactive/issues"
+  },
+  "homepage": "https://github.com/artemsites/dom-reactive#readme",
+  "dependencies": {
+    "mitt": "^3.0.1"
+  }
+}
