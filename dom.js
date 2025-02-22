@@ -1,6 +1,6 @@
 /**
- * useDom
- * useState
+ * useDom - создание приложения
+ * ref - реактивное состояние
  */
 // import mitt from "mitt";
 import mitt from "./node_modules/mitt/dist/mitt.mjs";
@@ -22,19 +22,28 @@ export function useDom(app, id) {
   }
 }
 
-export function useState(defaultVal) {
-  let state = { val: defaultVal };
+export function ref(defaultValue) {
+  const stateNameHash = `state_${crypto.randomUUID()}`;
 
-  let stateNameHash = `state_${crypto.randomUUID()}`;
-  stateNamesHashes.set(state, stateNameHash);
-  emitter.emit(stateNameHash, state);
+  const proxyState = new Proxy(
+    { value: defaultValue },
+    {
+      set(target, prop, value) {
+        if (prop === "value") {
+          target[prop] = value;
+          emitter.emit(stateNameHash, target);
+          return true;
+        }
+        return false;
+      },
+    }
+  );
 
-  function setState(newVal) {
-    state.val = newVal;
-    emitter.emit(stateNameHash, state);
-  }
+  stateNamesHashes.set(proxyState, stateNameHash);
 
-  return [state, setState];
+  emitter.emit(stateNameHash, proxyState);
+
+  return proxyState;
 }
 
 function handlerClasses(wrapper, appInstance) {
@@ -80,8 +89,7 @@ function handlerClasses(wrapper, appInstance) {
     const state = appInstance[jsName];
 
     toggleClass(state, className, $el, isRevertVal);
-
-    let stateNameHash = stateNamesHashes.get(appInstance[jsName]);
+    let stateNameHash = stateNamesHashes.get(state);
 
     emitter.on(stateNameHash, (newState) => {
       toggleClass(newState, className, $el, isRevertVal);
@@ -90,11 +98,7 @@ function handlerClasses(wrapper, appInstance) {
 }
 
 function toggleClass(state, className, where, isRevertVal = false) {
-  let valLoc = state.val;
-
-  if (isRevertVal) valLoc = !valLoc;
-
-  if (valLoc) {
+  if (state.value && !isRevertVal) {
     if (Array.isArray(className)) {
       where.classList.remove(className[1]);
       where.classList.add(className[0]);

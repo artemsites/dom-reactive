@@ -1,49 +1,53 @@
-Инициализация приложения в js
+# Библиотека "Dom" - краткая суть
+ 1. Библиотека работает с настоящим DOM деревом.
+  > В отличи от Vue и React которые работают  с виртуальным DOM и затем рендарят результаты в настоящий DOM!
+ 2. Используется валидное HTML API, в следствии этого библиотека не создаёт ошибок валидации https://validator.w3.org/
+  > В отличи от Vue который если применять в HTML разметке классического сайта - создаёт ошибки валидации HTML!
+
+## Инициализация приложения в js
 ```js
-import { useDom, useState } from "./dom.js";
+import { useDom, ref } from "./dom.js";
 
 useDom(() => {
-  let [isNavMobileActive, setIsNavMobileActive] = useState(false);
+  let isActive = ref(false);
 
-  function openNavMobile() {
-    setIsNavMobileActive(true);
+  function open() {
+    isActive.value = true;
   }
 
-  function closeNavMobile() {
-    setIsNavMobileActive(false);
+  function close() {
+    isActive.value = false;
   }
 
   return {
-    isNavMobileActive,
-    openNavMobile,
-    closeNavMobile,
+    isActive,
+    open,
+    close,
   };
 }, "header");
+
 ```
 
-Использование приложения в html
+## Использование приложения в html
 > Важно: каждое приложение является объектом под названием id на которое создаётся приложение, например "header":
 ```html
-<header id="header">
+  <header id="header">
 
-  <button onclick="header.openNavMobile()">
-    open
-  </button>
+    <button onclick="header.open()">
+      open
+    </button>
 
-  <button onclick="header.closeNavMobile()">
-    close
-  </button>
+    <button onclick="header.close()">
+      close
+    </button>
 
-  <!-- Установка классов с помощью имитации объекта - в data-class пишется валидный JSON -->
-  <div class="target" data-class='{"active": "header.isNavMobileActive", "active-not": "!header.isNavMobileActive"}'>
-  test data-class Object JSON
-  </div>
+    <div class="target" data-class='{"active": "header.isActive", "active-not": "!header.isActive"}'>
+      test data-class Object JSON
+    </div>
 
-  <!-- Установка классов с помощью имитации тернарников в массиве - в data-class пишется валидный JSON -->
-  <div class="target"
-    data-class='["header.isNavMobileActive ? active : active-not", "!header.isNavMobileActive ? test-not : test"]'>
-  test data-class Array JSON
-  </div>
+    <div class="target" data-class='["header.isActive ? active : active-not", "!header.isActive ? test-not : test"]'>
+      test data-class Array JSON
+    </div>
 
-</header>
+  </header>
 ```

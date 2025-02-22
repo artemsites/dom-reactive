@@ -1,19 +1,19 @@
-import { useDom, useState } from "./dom.js";
+import { useDom, ref } from "./dom.js";
 
 useDom(() => {
-  let [isNavMobileActive, setIsNavMobileActive] = useState(false);
+  let isActive = ref(false);
 
-  function openNavMobile() {
-    setIsNavMobileActive(true);
+  function open() {
+    isActive.value = true;
   }
 
-  function closeNavMobile() {
-    setIsNavMobileActive(false);
+  function close() {
+    isActive.value = false;
   }
 
   return {
-    isNavMobileActive,
-    openNavMobile,
-    closeNavMobile,
+    isActive,
+    open,
+    close,
   };
 }, "header");

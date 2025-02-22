@@ -14,20 +14,19 @@
 
   <header id="header">
 
-    <button onclick="header.openNavMobile()">
+    <button onclick="header.open()">
       open
     </button>
 
-    <button onclick="header.closeNavMobile()">
+    <button onclick="header.close()">
       close
     </button>
 
-    <div class="target" data-class='{"active": "header.isNavMobileActive", "active-not": "!header.isNavMobileActive"}'>
+    <div class="target" data-class='{"active": "header.isActive", "active-not": "!header.isActive"}'>
       test data-class Object JSON
     </div>
 
-    <div class="target"
-      data-class='["header.isNavMobileActive ? active : active-not", "!header.isNavMobileActive ? test-not : test"]'>
+    <div class="target" data-class='["header.isActive ? active : active-not", "!header.isActive ? test-not : test"]'>
       test data-class Array JSON
     </div>
 
