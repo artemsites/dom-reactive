@@ -1,6 +1,6 @@
 # Dom Library - a brief summary
- 1. The library works with a real DOM tree.
-  > > Unlike Vue and React, which work with a virtual DOM and then render the results to the real DOM!
+1. The library works with a real DOM tree.
+> Unlike Vue and React, which work with a virtual DOM and then render the results to the real DOM!
 2. A valid HTML API is used, as a result, the library does not create validation errors https://validator.w3.org /
 > Unlike Vue, which, when used in the HTML markup of a classic website, creates HTML validation errors!
 
@@ -30,6 +30,8 @@ createScope(() => {
 
 ```
 
+
+
 ## Using the application in html
 Important: each application is an object called the id for which the application is created, for example, "header":
 ```html
@@ -55,10 +57,13 @@ Important: each application is an object called the id for which the application
 ```
 
 
+
 ## API
 * `createScope' - creating an area in the DOM for working with the library
 * `ref` - reactive state
 * `data-class` is an attribute of an HTML element for dynamic class management
+
+
 
 ## TODO:
 Get rid of switches in src/dom.ts
@@ -71,4 +76,4 @@ import mitt from "../node_modules/mitt/dist/mitt.mjs";
 import mitt from "mitt";
 ```
 * In other words, make a library build along with dependencies? (together at MITT)   
-* * Or make the right path to dependencies? (import mitt from "../node_modules/mitt/dist/mitt.mjs")
+* Or make the right path to dependencies? (import mitt from "../node_modules/mitt/dist/mitt.mjs")   

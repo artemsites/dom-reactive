@@ -1,6 +1,6 @@
 {
   "name": "dom-reactive",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "A library for working with DOM with syntax similar to Vue.",
   "main": "index.ts",
   "scripts": {
