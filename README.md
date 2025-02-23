@@ -24,7 +24,7 @@ yarn add dom-reactive
 
 
 
-## Import `dom-reactive` in js
+## Import dom-reactive in js
 **js module WITHOUT builder**
 ```ts
 import { createScope, ref } from "./node_modules/dom-reactive/index.mjs";
