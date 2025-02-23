@@ -6,6 +6,24 @@
 
 
 
+## Install:
+**npm:**
+```
+npm i dom-reactive
+```
+
+**pnpm:**
+```
+pnpm i dom-reactive
+```
+
+**yarn:**
+```
+yarn add dom-reactive
+```
+
+
+
 ## Initializing the application in js
 ```js
 // js module for web browser WITHOUT builder
