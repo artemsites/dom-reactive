@@ -24,14 +24,21 @@ yarn add dom-reactive
 
 
 
-## Initializing the application in js
-```js
-// js module for web browser WITHOUT builder
+## Import `dom-reactive` in js
+**js module WITHOUT builder**
+```ts
 import { createScope, ref } from "./node_modules/dom-reactive/index.mjs";
+```
 
-// js module for web browser WITH builder
+**js module WITH builder**
+```ts
 import { createScope, ref } from "dom-reactive";
+```
 
+
+
+## Initializing the application in js
+```ts
 createScope("header", () => {
   let isActive = ref(false);
 
