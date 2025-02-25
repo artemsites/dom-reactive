@@ -1,4 +1,6 @@
 # Dom Library - a brief summary
+A library for working with DOM with syntax similar to Vue.
+
 1. The library works with a real DOM tree.
 > Unlike Vue, which work with a virtual DOM and then render the results to the real DOM!
 2. A valid HTML API is used, as a result, the library does not create validation errors https://validator.w3.org
@@ -109,7 +111,7 @@ Important: each application is an object called the id for which the application
 
 
 ## Functional history:
-### 1.1.1
+### 1.1.2
 * Added comparison in data-class: 
 ```html
   data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'
