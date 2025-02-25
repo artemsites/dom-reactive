@@ -80,11 +80,19 @@ Important: each application is an object called the id for which the application
     </button>
 
     <div class="target" data-class='{"active": "header.isActive", "active-not": "!header.isActive"}'>
-      test data-class Object JSON
+      test data-class Object JSON - JS check True - False
     </div>
 
     <div class="target" data-class='["header.isActive ? active : active-not", "!header.isActive ? test-not : test"]'>
-      test data-class Array JSON
+      test data-class Array JSON - JS check True - False
+    </div>
+
+    <div class="target" data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'>
+      test data-class Object JSON - JS Comparsion
+    </div>
+
+    <div class="target" data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? test3 : test4"]'>
+      test data-class Array JSON - JS Comparsion
     </div>
 
   </header>
@@ -97,3 +105,9 @@ Important: each application is an object called the id for which the application
 * `createScope` - creating an area in the DOM for working with the library
 * `ref` - reactive state
 * `data-class` is an attribute of an HTML element for dynamic class management
+
+
+
+## Functional history:
+### 1.1.0
+* Added comparison in data-class: `data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'`

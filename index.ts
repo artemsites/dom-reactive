@@ -10,7 +10,7 @@
 import mitt from "mitt";
 
 interface State {
-  value: boolean;
+  value: any;
 }
 
 declare global {
@@ -37,22 +37,21 @@ export function createScope(scopeId: string, scopeApp: () => void) {
   }
 }
 
-export function ref(defaultValue: any) {
+export function ref(defaultValue: any): State {
   const stateNameHash = `state_${crypto.randomUUID()}`;
+  let state: State = { value: defaultValue };
 
-  const proxyState = new Proxy(
-    { value: defaultValue },
-    {
-      set(target, prop, value) {
-        if (prop === "value") {
-          target[prop] = value;
-          emitter.emit(stateNameHash, target);
-          return true;
-        }
-        return false;
-      },
-    }
-  );
+  const proxyState = new Proxy<State>(state, {
+    set(stateTarget, prop, valueNew) {
+      if (prop === "value") {
+        // {value: false}
+        stateTarget["value"] = valueNew;
+        emitter.emit(stateNameHash, stateTarget);
+        return true;
+      }
+      return false;
+    },
+  });
 
   stateNamesHashes.set(proxyState, stateNameHash);
 
@@ -108,42 +107,97 @@ function handlerClasses(wrapper: HTMLElement, appInstance: any) {
       jsNameWithPrefix = jsNameWithPrefix.slice(1);
     }
 
-    let jsName = jsNameWithPrefix.replace(/^\w+\./, "");
+    let jsExpression = deleteWordPrefix(jsNameWithPrefix);
 
-    const state = appInstance[jsName];
+    if (jsExpression.includes("==")) {
+      let res = splitExpression(jsExpression, /==/);
+      if (res && res.length === 2) {
+        const [jsName, jsVal] = res;
 
-    toggleClass(state, className, $el, isRevertVal);
-    let stateNameHash = stateNamesHashes.get(state);
+        let state = appInstance[jsName];
+        let isTrue = state.value == jsVal;
+        toggleClass(isTrue, className, $el, isRevertVal);
+        let stateNameHash = stateNamesHashes.get(state);
 
-    emitter.on(stateNameHash, (newState) => {
-      toggleClass(newState as State, className, $el, isRevertVal);
-    });
+        emitter.on(stateNameHash, (newState: any) => {
+          if (newState) {
+            let isTrue = newState.value == jsVal;
+            toggleClass(isTrue, className, $el, isRevertVal);
+          }
+        });
+      }
+    } else if (jsExpression.includes("!=")) {
+      let res = splitExpression(jsExpression, /!=/);
+      if (res && res.length === 2) {
+        const [jsName, jsVal] = res;
+
+        let state = appInstance[jsName];
+        let isTrue = state.value != jsVal;
+        toggleClass(isTrue, className, $el, isRevertVal);
+        let stateNameHash = stateNamesHashes.get(state);
+
+        emitter.on(stateNameHash, (newState: any) => {
+          let isTrue = newState.value != jsVal;
+          toggleClass(isTrue, className, $el, isRevertVal);
+        });
+      }
+    } else {
+      let state = appInstance[jsExpression];
+
+      toggleClass(state.value, className, $el, isRevertVal);
+      let stateNameHash = stateNamesHashes.get(state);
+
+      emitter.on(stateNameHash, (newState: any) => {
+        toggleClass(newState.value, className, $el, isRevertVal);
+      });
+    }
   }
 }
 
 function toggleClass(
-  state: State,
+  value: any,
   className: string | string[],
   where: HTMLElement,
   isRevertVal = false
 ) {
-  if (state.value && !isRevertVal) {
-    if (Array.isArray(className)) {
-      where.classList.remove(className[1]);
-      where.classList.add(className[0]);
+  try {
+    if (value && !isRevertVal) {
+      if (Array.isArray(className)) {
+        where.classList.remove(className[1]);
+        where.classList.add(className[0]);
+      } else {
+        where.classList.add(className);
+      }
     } else {
-      where.classList.add(className);
+      if (Array.isArray(className)) {
+        where.classList.remove(className[0]);
+        where.classList.add(className[1]);
+      } else {
+        where.classList.remove(className);
+      }
     }
-  } else {
-    if (Array.isArray(className)) {
-      where.classList.remove(className[0]);
-      where.classList.add(className[1]);
-    } else {
-      where.classList.remove(className);
-    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
 function isObject(value: any) {
   return value !== null && typeof value === "object";
+}
+
+function deleteWordPrefix(strWithprefixWithDot: string) {
+  return strWithprefixWithDot.replace(/^\w+\./, "");
+}
+
+function splitExpression(
+  expression: string,
+  regex: RegExp
+): [string, string] | null {
+  const parts = expression.split(regex);
+
+  if (parts.length === 2) {
+    return [parts[0].trim(), parts[1].trim()];
+  }
+
+  return null;
 }
