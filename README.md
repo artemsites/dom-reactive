@@ -111,10 +111,11 @@ Important: each application is an object called the id for which the application
 
 
 ## Functional history:
-### 1.1.2
-* Added comparison in data-class: 
+### 1.1.3
+* Added comparison in data-class:  
+
 ```html
-  data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'
+data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'
 ```
 
 ```html
