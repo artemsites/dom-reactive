@@ -2,6 +2,10 @@
 
 echo "!!! github"
 git push github master
+git push github check-function-in-data-class
+
+
 
 echo "!!! gitverse"
 git push gitverse master
+git push gitverse check-function-in-data-class
