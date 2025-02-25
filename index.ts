@@ -108,10 +108,29 @@ function handlerClasses(wrapper: HTMLElement, appInstance: any) {
       jsNameWithPrefix = jsNameWithPrefix.slice(1);
     }
 
-    let jsName = jsNameWithPrefix.replace(/^\w+\./, "");
+    let jsName = deleteWordPrefix(jsNameWithPrefix);
+    let jsArgs = "";
 
-    const state = appInstance[jsName];
+    if (jsName.includes("(") && jsName.includes(")")) {
+      const match = jsName.match(/^(\w+)\((.*)\)$/);
+      if (match) {
+        jsName = match[1];
+        jsArgs = match[2];
+      } else {
+        console.log("Не удалось найти имя функции и аргументы.");
+      }
+    }
 
+    let state = null;
+
+    if (jsArgs) {
+      // @todo функция должна возвращать proxy - предварительно фукнцию надо сделать как прокси чтобы перехватывать что там происходит и емитить события изменения на подобии как в ref
+      // @todo или state должен оставаться state = appInstance[jsName] но как то подписываться на это имя?
+      state = appInstance[jsName](jsArgs);
+    } else {
+      state = appInstance[jsName];
+    }
+    console.log("state: ", state);
     toggleClass(state, className, $el, isRevertVal);
     let stateNameHash = stateNamesHashes.get(state);
 
@@ -127,23 +146,31 @@ function toggleClass(
   where: HTMLElement,
   isRevertVal = false
 ) {
-  if (state.value && !isRevertVal) {
-    if (Array.isArray(className)) {
-      where.classList.remove(className[1]);
-      where.classList.add(className[0]);
+  try {
+    if (state.value && !isRevertVal) {
+      if (Array.isArray(className)) {
+        where.classList.remove(className[1]);
+        where.classList.add(className[0]);
+      } else {
+        where.classList.add(className);
+      }
     } else {
-      where.classList.add(className);
+      if (Array.isArray(className)) {
+        where.classList.remove(className[0]);
+        where.classList.add(className[1]);
+      } else {
+        where.classList.remove(className);
+      }
     }
-  } else {
-    if (Array.isArray(className)) {
-      where.classList.remove(className[0]);
-      where.classList.add(className[1]);
-    } else {
-      where.classList.remove(className);
-    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
 function isObject(value: any) {
   return value !== null && typeof value === "object";
+}
+
+function deleteWordPrefix(strWithprefixWithDot: string) {
+  return strWithprefixWithDot.replace(/^\w+\./, "");
 }
