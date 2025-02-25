@@ -109,5 +109,12 @@ Important: each application is an object called the id for which the application
 
 
 ## Functional history:
-### 1.1.0
-* Added comparison in data-class: `data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'`
+### 1.1.1
+* Added comparison in data-class: 
+```html
+  data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'
+```
+
+```html
+data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? test3 : test4"]'
+```
