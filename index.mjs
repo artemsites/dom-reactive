@@ -1,121 +1,142 @@
-function A(e) {
-  return { all: e = e || /* @__PURE__ */ new Map(), on: function(t, s) {
-    var r = e.get(t);
-    r ? r.push(s) : e.set(t, [s]);
-  }, off: function(t, s) {
-    var r = e.get(t);
-    r && (s ? r.splice(r.indexOf(s) >>> 0, 1) : e.set(t, []));
-  }, emit: function(t, s) {
-    var r = e.get(t);
-    r && r.slice().map(function(n) {
-      n(s);
-    }), (r = e.get("*")) && r.slice().map(function(n) {
-      n(t, s);
+function j(t) {
+  return { all: t = t || /* @__PURE__ */ new Map(), on: function(e, n) {
+    var s = t.get(e);
+    s ? s.push(n) : t.set(e, [n]);
+  }, off: function(e, n) {
+    var s = t.get(e);
+    s && (n ? s.splice(s.indexOf(n) >>> 0, 1) : t.set(e, []));
+  }, emit: function(e, n) {
+    var s = t.get(e);
+    s && s.slice().map(function(u) {
+      u(n);
+    }), (s = t.get("*")) && s.slice().map(function(u) {
+      u(e, n);
     });
   } };
 }
-const v = A();
-let h = /* @__PURE__ */ new Map();
-function T(e, t) {
-  const s = document.getElementById(e);
-  if (s) {
-    const r = t();
-    E(s, r), window[e] = r;
+const x = j();
+let y = /* @__PURE__ */ new Map();
+function H(t, e) {
+  const n = document.getElementById(t);
+  if (n) {
+    const s = e();
+    L(n, s), window[t] = s;
   } else
-    throw Error("Нет wrapper: #" + e);
+    throw Error("Нет wrapper: #" + t);
 }
-function S(e) {
-  const t = `state_${crypto.randomUUID()}`;
-  let s = { value: e };
-  const r = new Proxy(s, {
-    set(n, o, a) {
-      return o === "value" ? (n.value = a, v.emit(t, n), !0) : !1;
+function q(t) {
+  const e = `state_${crypto.randomUUID()}`;
+  let n = { value: t };
+  const s = new Proxy(n, {
+    set(u, m, a) {
+      return m === "value" ? (u.value = a, x.emit(e, u), !0) : !1;
     }
   });
-  return h.set(r, t), v.emit(t, r), r;
+  return y.set(s, e), x.emit(e, s), s;
 }
-function E(e, t) {
-  e.querySelectorAll(
+function L(t, e) {
+  t.querySelectorAll(
     "[data-class]"
-  ).forEach((n) => {
-    if (n.dataset.class) {
-      let o = n.dataset.class;
-      n.removeAttribute("data-class");
-      const a = JSON.parse(o);
-      if (Array.isArray(a))
-        for (let i in a) {
-          let c = a[i];
-          const l = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, u = c.match(l);
-          let f = u[1];
-          const d = u[2], m = u[3];
-          r(n, [d, m], f);
+  ).forEach((a) => {
+    if (a.dataset.class) {
+      let o = a.dataset.class;
+      a.removeAttribute("data-class");
+      const r = JSON.parse(o);
+      if (Array.isArray(r))
+        for (let c in r) {
+          let i = r[c];
+          const d = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, l = i.match(d);
+          let f = l[1];
+          const p = l[2], g = l[3];
+          s(a, [p, g], f);
         }
-      else if (L(a))
-        for (let i in a) {
-          let c = a[i];
-          r(n, i, c);
+      else if (S(r))
+        for (let c in r) {
+          let i = r[c];
+          s(a, c, i);
         }
     }
   });
-  function r(n, o, a) {
-    let i = !1;
-    a[0] === "!" && (i = !0, a = a.slice(1));
-    let c = H(a);
-    if (c.includes("==")) {
-      let l = x(c, /==/);
-      if (l && l.length === 2) {
-        const [u, f] = l;
-        let d = t[u], m = d.value == f;
-        p(m, o, n, i);
-        let g = h.get(d);
-        v.on(g, (y) => {
-          if (y) {
-            let j = y.value == f;
-            p(j, o, n, i);
-          }
-        });
-      }
-    } else if (c.includes("!=")) {
-      let l = x(c, /!=/);
-      if (l && l.length === 2) {
-        const [u, f] = l;
-        let d = t[u], m = d.value != f;
-        p(m, o, n, i);
-        let g = h.get(d);
-        v.on(g, (y) => {
-          let j = y.value != f;
-          p(j, o, n, i);
-        });
-      }
-    } else {
-      let l = t[c];
-      p(l.value, o, n, i);
-      let u = h.get(l);
-      v.on(u, (f) => {
-        p(f.value, o, n, i);
+  function s(a, o, r) {
+    let c = !1;
+    r[0] === "!" && (c = !0, r = r.slice(1));
+    let i = b(r);
+    const d = i.includes("!="), l = i.includes("==");
+    if (d || l)
+      d ? u(
+        i,
+        /!=/,
+        "!=",
+        o,
+        a,
+        c
+      ) : l && u(
+        i,
+        /==/,
+        "==",
+        o,
+        a,
+        c
+      );
+    else {
+      const f = e[i];
+      m(f.value, o, a, c);
+      const p = y.get(f);
+      x.on(p, (g) => {
+        m(g.value, o, a, c);
       });
     }
   }
-}
-function p(e, t, s, r = !1) {
-  try {
-    e && !r ? Array.isArray(t) ? (s.classList.remove(t[1]), s.classList.add(t[0])) : s.classList.add(t) : Array.isArray(t) ? (s.classList.remove(t[0]), s.classList.add(t[1])) : s.classList.remove(t);
-  } catch (n) {
-    console.error(n);
+  function u(a, o, r, c, i, d) {
+    const l = C(a, o);
+    if (l && l.length === 2) {
+      const [f, p] = l, g = e[f], E = h(g.value, p, r);
+      m(E, c, i, d);
+      const A = y.get(g);
+      x.on(A, (v) => {
+        const w = h(v.value, p, r);
+        m(w, c, i, d);
+      });
+    }
+  }
+  function m(a, o, r, c = !1) {
+    try {
+      a && !c ? Array.isArray(o) ? (r.classList.remove(o[1]), r.classList.add(o[0])) : r.classList.add(o) : Array.isArray(o) ? (r.classList.remove(o[0]), r.classList.add(o[1])) : r.classList.remove(o);
+    } catch (i) {
+      console.error(i);
+    }
   }
 }
-function L(e) {
-  return e !== null && typeof e == "object";
+function S(t) {
+  return t !== null && typeof t == "object";
 }
-function H(e) {
-  return e.replace(/^\w+\./, "");
+function b(t) {
+  return t.replace(/^\w+\./, "");
 }
-function x(e, t) {
-  const s = e.split(t);
-  return s.length === 2 ? [s[0].trim(), s[1].trim()] : null;
+function C(t, e) {
+  const n = t.split(e);
+  return n.length === 2 ? [n[0].trim(), n[1].trim()] : null;
+}
+function h(t, e, n) {
+  switch (n) {
+    case "!=":
+      return t != e;
+    case "==":
+      return t == e;
+    case "<":
+      return t < e;
+    case ">":
+      return t > e;
+    case "<=":
+      return t <= e;
+    case ">=":
+      return t >= e;
+    default:
+      throw new Error("Invalid operator");
+  }
 }
 export {
-  T as createScope,
-  S as ref
+  H as createScope,
+  q as ref
 };
 //# sourceMappingURL=index.mjs.map

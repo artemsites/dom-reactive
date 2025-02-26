@@ -29,7 +29,7 @@ export function createScope(scopeId: string, scopeApp: () => void) {
   if (wrapper) {
     const appInstance = scopeApp();
 
-    handlerClasses(wrapper, appInstance);
+    handlerClassesReactive(wrapper, appInstance);
 
     window[scopeId] = appInstance;
   } else {
@@ -44,7 +44,6 @@ export function ref(defaultValue: any): State {
   const proxyState = new Proxy<State>(state, {
     set(stateTarget, prop, valueNew) {
       if (prop === "value") {
-        // {value: false}
         stateTarget["value"] = valueNew;
         emitter.emit(stateNameHash, stateTarget);
         return true;
@@ -60,7 +59,7 @@ export function ref(defaultValue: any): State {
   return proxyState;
 }
 
-function handlerClasses(wrapper: HTMLElement, appInstance: any) {
+function handlerClassesReactive(wrapper: HTMLElement, appInstance: any) {
   const $classes = wrapper.querySelectorAll(
     "[data-class]"
   ) as NodeListOf<HTMLElement>;
@@ -84,19 +83,19 @@ function handlerClasses(wrapper: HTMLElement, appInstance: any) {
           const classNameFalse = match[3];
           const className = [classNameTrue, classNameFalse];
 
-          handlerClassesInner($el, className, jsNameWithPrefix);
+          handlerClassesReactiveSubFunc($el, className, jsNameWithPrefix);
         }
       } else if (isObject(parsedJson)) {
         for (let className in parsedJson) {
           let jsNameWithPrefix = parsedJson[className];
 
-          handlerClassesInner($el, className, jsNameWithPrefix);
+          handlerClassesReactiveSubFunc($el, className, jsNameWithPrefix);
         }
       }
     }
   });
 
-  function handlerClassesInner(
+  function handlerClassesReactiveSubFunc(
     $el: HTMLElement,
     className: string | string[],
     jsNameWithPrefix: string
@@ -109,78 +108,99 @@ function handlerClasses(wrapper: HTMLElement, appInstance: any) {
 
     let jsExpression = deleteWordPrefix(jsNameWithPrefix);
 
-    if (jsExpression.includes("==")) {
-      let res = splitExpression(jsExpression, /==/);
-      if (res && res.length === 2) {
-        const [jsName, jsVal] = res;
-
-        let state = appInstance[jsName];
-        let isTrue = state.value == jsVal;
-        toggleClass(isTrue, className, $el, isRevertVal);
-        let stateNameHash = stateNamesHashes.get(state);
-
-        emitter.on(stateNameHash, (newState: any) => {
-          if (newState) {
-            let isTrue = newState.value == jsVal;
-            toggleClass(isTrue, className, $el, isRevertVal);
-          }
-        });
-      }
-    } else if (jsExpression.includes("!=")) {
-      let res = splitExpression(jsExpression, /!=/);
-      if (res && res.length === 2) {
-        const [jsName, jsVal] = res;
-
-        let state = appInstance[jsName];
-        let isTrue = state.value != jsVal;
-        toggleClass(isTrue, className, $el, isRevertVal);
-        let stateNameHash = stateNamesHashes.get(state);
-
-        emitter.on(stateNameHash, (newState: any) => {
-          let isTrue = newState.value != jsVal;
-          toggleClass(isTrue, className, $el, isRevertVal);
-        });
+    const isNotEqualExpression = jsExpression.includes("!=");
+    const isEqualExpression = jsExpression.includes("==");
+    if (isNotEqualExpression || isEqualExpression) {
+      if (isNotEqualExpression) {
+        const regex = /!=/;
+        const operator = "!=";
+        compareAndUpdateClassesReactive(
+          jsExpression,
+          regex,
+          operator,
+          className,
+          $el,
+          isRevertVal
+        );
+      } else if (isEqualExpression) {
+        const regex = /==/;
+        const operator = "==";
+        compareAndUpdateClassesReactive(
+          jsExpression,
+          regex,
+          operator,
+          className,
+          $el,
+          isRevertVal
+        );
       }
     } else {
-      let state = appInstance[jsExpression];
+      const state = appInstance[jsExpression];
 
       toggleClass(state.value, className, $el, isRevertVal);
-      let stateNameHash = stateNamesHashes.get(state);
+      const stateNameHash = stateNamesHashes.get(state);
 
       emitter.on(stateNameHash, (newState: any) => {
         toggleClass(newState.value, className, $el, isRevertVal);
       });
     }
   }
-}
 
-function toggleClass(
-  value: any,
-  className: string | string[],
-  where: HTMLElement,
-  isRevertVal = false
-) {
-  try {
-    if (value && !isRevertVal) {
-      if (Array.isArray(className)) {
-        where.classList.remove(className[1]);
-        where.classList.add(className[0]);
-      } else {
-        where.classList.add(className);
-      }
-    } else {
-      if (Array.isArray(className)) {
-        where.classList.remove(className[0]);
-        where.classList.add(className[1]);
-      } else {
-        where.classList.remove(className);
-      }
+  function compareAndUpdateClassesReactive(
+    jsExpression: any,
+    regex: any,
+    operator: any,
+    className: any,
+    $el: any,
+    isRevertVal: any
+  ) {
+    const res = splitExpression(jsExpression, regex);
+    if (res && res.length === 2) {
+      const [jsName, jsVal] = res;
+
+      const state = appInstance[jsName];
+
+      const isTrue = compare(state.value, jsVal, operator);
+
+      toggleClass(isTrue, className, $el, isRevertVal);
+      const stateNameHash = stateNamesHashes.get(state);
+
+      emitter.on(stateNameHash, (newState: any) => {
+        const isTrue = compare(newState.value, jsVal, operator);
+        toggleClass(isTrue, className, $el, isRevertVal);
+      });
     }
-  } catch (error) {
-    console.error(error);
+  }
+
+  function toggleClass(
+    value: any,
+    className: string | string[],
+    where: HTMLElement,
+    isRevertVal = false
+  ) {
+    try {
+      if (value && !isRevertVal) {
+        if (Array.isArray(className)) {
+          where.classList.remove(className[1]);
+          where.classList.add(className[0]);
+        } else {
+          where.classList.add(className);
+        }
+      } else {
+        if (Array.isArray(className)) {
+          where.classList.remove(className[0]);
+          where.classList.add(className[1]);
+        } else {
+          where.classList.remove(className);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
+// @note tools:
 function isObject(value: any) {
   return value !== null && typeof value === "object";
 }
@@ -200,4 +220,23 @@ function splitExpression(
   }
 
   return null;
+}
+
+function compare(value1: any, value2: any, operator: string) {
+  switch (operator) {
+    case "!=":
+      return value1 != value2;
+    case "==":
+      return value1 == value2;
+    case "<":
+      return value1 < value2;
+    case ">":
+      return value1 > value2;
+    case "<=":
+      return value1 <= value2;
+    case ">=":
+      return value1 >= value2;
+    default:
+      throw new Error("Invalid operator");
+  }
 }
