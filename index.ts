@@ -114,62 +114,81 @@ function handlerClassesReactive(wrapper: HTMLElement, appInstance: any) {
       if (isNotEqualExpression) {
         const regex = /!=/;
         const operator = "!=";
-        compareAndUpdateClassesReactive(
+        splitExpressionAndCompareAndUpdateClassesReactive(
           jsExpression,
           regex,
           operator,
+          isRevertVal,
           className,
-          $el,
-          isRevertVal
+          $el
         );
       } else if (isEqualExpression) {
         const regex = /==/;
         const operator = "==";
-        compareAndUpdateClassesReactive(
+        splitExpressionAndCompareAndUpdateClassesReactive(
           jsExpression,
           regex,
           operator,
+          isRevertVal,
           className,
-          $el,
-          isRevertVal
+          $el
         );
       }
     } else {
-      const state = appInstance[jsExpression];
-
-      toggleClass(state.value, className, $el, isRevertVal);
-      const stateNameHash = stateNamesHashes.get(state);
-
-      emitter.on(stateNameHash, (newState: any) => {
-        toggleClass(newState.value, className, $el, isRevertVal);
-      });
+      const operator = "==";
+      const jsName = jsExpression;
+      const jsVal = true;
+      compareAndUpdateClassesReactive(
+        jsName,
+        jsVal,
+        operator,
+        isRevertVal,
+        className,
+        $el
+      );
     }
   }
 
-  function compareAndUpdateClassesReactive(
+  function splitExpressionAndCompareAndUpdateClassesReactive(
     jsExpression: any,
     regex: any,
     operator: any,
+    isRevertVal: any,
     className: any,
-    $el: any,
-    isRevertVal: any
+    $el: any
   ) {
     const res = splitExpression(jsExpression, regex);
     if (res && res.length === 2) {
       const [jsName, jsVal] = res;
-
-      const state = appInstance[jsName];
-
-      const isTrue = compare(state.value, jsVal, operator);
-
-      toggleClass(isTrue, className, $el, isRevertVal);
-      const stateNameHash = stateNamesHashes.get(state);
-
-      emitter.on(stateNameHash, (newState: any) => {
-        const isTrue = compare(newState.value, jsVal, operator);
-        toggleClass(isTrue, className, $el, isRevertVal);
-      });
+      compareAndUpdateClassesReactive(
+        jsName,
+        jsVal,
+        operator,
+        isRevertVal,
+        className,
+        $el
+      );
     }
+  }
+
+  function compareAndUpdateClassesReactive(
+    jsName: any,
+    jsVal: any,
+    operator: any,
+    isRevertVal: any,
+    className: any,
+    $el: any
+  ) {
+    const state = appInstance[jsName];
+    const isTrue = compare(state.value, jsVal, operator);
+
+    toggleClass(isTrue, className, $el, isRevertVal);
+    const stateNameHash = stateNamesHashes.get(state);
+
+    emitter.on(stateNameHash, (newState: any) => {
+      const isTrue = compare(newState.value, jsVal, operator);
+      toggleClass(isTrue, className, $el, isRevertVal);
+    });
   }
 
   function toggleClass(
