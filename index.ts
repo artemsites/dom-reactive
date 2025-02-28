@@ -198,19 +198,21 @@ function handlerClassesReactive(wrapper: HTMLElement, appInstance: any) {
     isRevertVal = false
   ) {
     try {
-      if (value && !isRevertVal) {
-        if (Array.isArray(className)) {
-          where.classList.remove(className[1]);
-          where.classList.add(className[0]);
-        } else {
+      const isTrue = (value && !isRevertVal) || (!value && isRevertVal);
+      if (typeof className === "string") {
+        if (isTrue) {
           where.classList.add(className);
-        }
-      } else {
-        if (Array.isArray(className)) {
-          where.classList.remove(className[0]);
-          where.classList.add(className[1]);
         } else {
           where.classList.remove(className);
+        }
+      } else if (Array.isArray(className)) {
+        const [classIfTrue, classIfFalse] = className;
+        if (isTrue) {
+          where.classList.remove(classIfFalse);
+          where.classList.add(classIfTrue);
+        } else {
+          where.classList.remove(classIfTrue);
+          where.classList.add(classIfFalse);
         }
       }
     } catch (error) {

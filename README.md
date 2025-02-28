@@ -111,13 +111,17 @@ Important: each application is an object called the id for which the application
 
 
 ## Functional history:
-### 1.1.3
-* Added comparison in data-class:  
-
+### 1.1.3 Added comparison in data-class:  
 ```html
 data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'
 ```
 
 ```html
 data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? test3 : test4"]'
+```
+
+### 1.2.0 Fixed a bug of switching classes while using:
+```
+<div data-class='{"--active": "!header.isActive"}'>not-active</div>
+<div data-class='{"--active": "header.isActive"}'>active</div>
 ```
