@@ -59,43 +59,48 @@ export function ref(defaultValue: any): State {
   return proxyState;
 }
 
-function handlerClassesReactive(wrapper: HTMLElement, appInstance: any) {
-  const $classes = wrapper.querySelectorAll(
+function handlerClassesReactive($wrapper: HTMLElement, appInstance: any) {
+  if ($wrapper.dataset.class) {
+    handlerClassesReactiveSubFunc1($wrapper);
+  }
+
+  const $elementsWithDataClasses = $wrapper.querySelectorAll(
     "[data-class]"
   ) as NodeListOf<HTMLElement>;
-
-  $classes.forEach(($el) => {
-    if ($el.dataset.class) {
-      let jsonString = $el.dataset.class;
-
-      $el.removeAttribute("data-class");
-
-      const parsedJson = JSON.parse(jsonString);
-      if (Array.isArray(parsedJson)) {
-        for (let i in parsedJson) {
-          let jsExpressionTernary = parsedJson[i];
-
-          const regex = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/;
-          const match = jsExpressionTernary.match(regex);
-
-          let jsNameWithPrefix = match[1];
-          const classNameTrue = match[2];
-          const classNameFalse = match[3];
-          const className = [classNameTrue, classNameFalse];
-
-          handlerClassesReactiveSubFunc($el, className, jsNameWithPrefix);
-        }
-      } else if (isObject(parsedJson)) {
-        for (let className in parsedJson) {
-          let jsNameWithPrefix = parsedJson[className];
-
-          handlerClassesReactiveSubFunc($el, className, jsNameWithPrefix);
-        }
-      }
-    }
+  $elementsWithDataClasses.forEach(($el) => {
+    handlerClassesReactiveSubFunc1($el);
   });
 
-  function handlerClassesReactiveSubFunc(
+  function handlerClassesReactiveSubFunc1($el) {
+    let jsonString = $el.dataset.class;
+
+    $el.removeAttribute("data-class");
+
+    const parsedJson = JSON.parse(jsonString);
+    if (Array.isArray(parsedJson)) {
+      for (let i in parsedJson) {
+        let jsExpressionTernary = parsedJson[i];
+
+        const regex = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/;
+        const match = jsExpressionTernary.match(regex);
+
+        let jsNameWithPrefix = match[1];
+        const classNameTrue = match[2];
+        const classNameFalse = match[3];
+        const className = [classNameTrue, classNameFalse];
+
+        handlerClassesReactiveSubFunc2($el, className, jsNameWithPrefix);
+      }
+    } else if (isObject(parsedJson)) {
+      for (let className in parsedJson) {
+        let jsNameWithPrefix = parsedJson[className];
+
+        handlerClassesReactiveSubFunc2($el, className, jsNameWithPrefix);
+      }
+    }
+  }
+
+  function handlerClassesReactiveSubFunc2(
     $el: HTMLElement,
     className: string | string[],
     jsNameWithPrefix: string

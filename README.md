@@ -125,3 +125,5 @@ data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? 
 <div data-class='{"--active": "!header.isActive"}'>not-active</div>
 <div data-class='{"--active": "header.isActive"}'>active</div>
 ```
+
+### 1.2.1 Added data-class check at root element
