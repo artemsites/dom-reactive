@@ -127,3 +127,5 @@ data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? 
 ```
 
 ### 1.2.1 Added data-class check at root element
+
+### 1.2.2 Emit ref only when the value is changed

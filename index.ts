@@ -44,8 +44,10 @@ export function ref(defaultValue: any): State {
   const proxyState = new Proxy<State>(state, {
     set(stateTarget, prop, valueNew) {
       if (prop === "value") {
-        stateTarget["value"] = valueNew;
-        emitter.emit(stateNameHash, stateTarget);
+        if (stateTarget["value"] !== valueNew) {
+          stateTarget["value"] = valueNew;
+          emitter.emit(stateNameHash, stateTarget);
+        }
         return true;
       }
       return false;
