@@ -98,6 +98,13 @@ Important: each application is an object called the id for which the application
     </div>
 
   </header>
+
+  <footer id="footer">
+    <!-- @note You can use functions from another scope: -->
+    <button onclick="header.close()">
+      close
+    </button>
+  </footer>
 </body>
 ```
 
