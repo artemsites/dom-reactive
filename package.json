@@ -21,7 +21,8 @@
     "url": "git+https://github.com/artemsites/dom-reactive.git"
   },
   "scripts": {
-    "build": "vite build"
+    "build": "vite build",
+    "publish": "npm publish"
   },
   "keywords": [
     "Working",
