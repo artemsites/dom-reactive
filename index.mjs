@@ -1,4 +1,4 @@
-function j(t) {
+function C(t) {
   return { all: t = t || /* @__PURE__ */ new Map(), on: function(s, n) {
     var r = t.get(s);
     r ? r.push(n) : t.set(s, [n]);
@@ -7,133 +7,149 @@ function j(t) {
     r && (n ? r.splice(r.indexOf(n) >>> 0, 1) : t.set(s, []));
   }, emit: function(s, n) {
     var r = t.get(s);
-    r && r.slice().map(function(f) {
-      f(n);
-    }), (r = t.get("*")) && r.slice().map(function(f) {
-      f(s, n);
+    r && r.slice().map(function(u) {
+      u(n);
+    }), (r = t.get("*")) && r.slice().map(function(u) {
+      u(s, n);
     });
   } };
 }
-const y = j();
-let h = /* @__PURE__ */ new Map();
-function b(t, s) {
+const y = C();
+let A = /* @__PURE__ */ new Map();
+function N(t, s) {
   const n = document.getElementById(t);
   if (n) {
     const r = s();
-    w(n, r), window[t] = r;
+    S(n, r), window[t] = r;
   } else
     throw Error("Нет wrapper: #" + t);
 }
-function R(t) {
+function w(t) {
   const s = `state_${crypto.randomUUID()}`;
   let n = { value: t };
   const r = new Proxy(n, {
-    set(f, m, g) {
-      return m === "value" ? (f.value = g, y.emit(s, f), !0) : !1;
+    set(u, g, m) {
+      return g === "value" ? (u.value !== m && (u.value = m, y.emit(s, u)), !0) : !1;
     }
   });
-  return h.set(r, s), y.emit(s, r), r;
+  return A.set(r, s), y.emit(s, r), r;
 }
-function w(t, s) {
-  t.querySelectorAll(
+function S(t, s) {
+  t.dataset.class && r(t), t.querySelectorAll(
     "[data-class]"
-  ).forEach((i) => {
-    if (i.dataset.class) {
-      let o = i.dataset.class;
-      i.removeAttribute("data-class");
-      const e = JSON.parse(o);
-      if (Array.isArray(e))
-        for (let c in e) {
-          let a = e[c];
-          const u = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, l = a.match(u);
-          let p = l[1];
-          const d = l[2], x = l[3];
-          r(i, [d, x], p);
-        }
-      else if (C(e))
-        for (let c in e) {
-          let a = e[c];
-          r(i, c, a);
-        }
-    }
+  ).forEach((c) => {
+    r(c);
   });
-  function r(i, o, e) {
-    let c = !1;
-    e[0] === "!" && (c = !0, e = e.slice(1));
-    let a = L(e);
-    const u = a.includes("!="), l = a.includes("==");
-    u || l ? u ? f(
+  function r(c) {
+    let i = c.dataset.class;
+    c.removeAttribute("data-class");
+    let e;
+    try {
+      e = JSON.parse(i);
+    } catch (o) {
+      console.error("Error at JSON string: " + i), console.error(o);
+    }
+    if (Array.isArray(e))
+      for (let o in e) {
+        let a = e[o];
+        const f = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, l = a.match(f);
+        let p = l[1];
+        const d = l[2], x = l[3];
+        u(
+          c,
+          [d, x],
+          p
+        );
+      }
+    else if (L(e))
+      for (let o in e) {
+        let a = e[o];
+        u(
+          c,
+          o,
+          a
+        );
+      }
+  }
+  function u(c, i, e) {
+    let o = !1;
+    e[0] === "!" && (o = !0, e = e.slice(1));
+    let a = b(e);
+    const f = a.includes("!="), l = a.includes("==");
+    f || l ? f ? g(
       a,
       /!=/,
       "!=",
       o,
-      c,
-      i
-    ) : l && f(
+      i,
+      c
+    ) : l && g(
       a,
       /==/,
       "==",
       o,
-      c,
-      i
+      i,
+      c
     ) : m(
       a,
       !0,
       "==",
-      c,
       o,
-      i
+      i,
+      c
     );
   }
-  function f(i, o, e, c, a, u) {
-    const l = S(i, o);
+  function g(c, i, e, o, a, f) {
+    const l = v(c, i);
     if (l && l.length === 2) {
       const [p, d] = l;
       m(
         p,
         d,
         e,
+        o,
         a,
-        c,
-        u
+        f
       );
     }
   }
-  function m(i, o, e, c, a, u) {
-    const l = s[i], p = A(l.value, o, e);
-    g(p, a, u, c);
-    const d = h.get(l);
+  function m(c, i, e, o, a, f) {
+    const l = s[c], p = j(l.value, i, e);
+    h(p, a, f, o);
+    const d = A.get(l);
     y.on(d, (x) => {
-      const E = A(x.value, o, e);
-      g(E, a, u, c);
+      const E = j(x.value, i, e);
+      h(E, a, f, o);
     });
   }
-  function g(i, o, e, c = !1) {
+  function h(c, i, e, o = !1) {
     try {
-      i && !c ? Array.isArray(o) ? (e.classList.remove(o[1]), e.classList.add(o[0])) : e.classList.add(o) : Array.isArray(o) ? (e.classList.remove(o[0]), e.classList.add(o[1])) : e.classList.remove(o);
+      const a = c && !o || !c && o;
+      if (typeof i == "string")
+        a ? e.classList.add(i) : e.classList.remove(i);
+      else if (Array.isArray(i)) {
+        const [f, l] = i;
+        a ? (e.classList.remove(l), e.classList.add(f)) : (e.classList.remove(f), e.classList.add(l));
+      }
     } catch (a) {
       console.error(a);
     }
   }
 }
-function C(t) {
+function L(t) {
   return t !== null && typeof t == "object";
 }
-function L(t) {
+function b(t) {
   return t.replace(/^\w+\./, "");
 }
-function S(t, s) {
+function v(t, s) {
   const n = t.split(s);
   return n.length === 2 ? [n[0].trim(), n[1].trim()] : null;
 }
-function A(t, s, n) {
+function j(t, s, n) {
   switch (n) {
-    case "!==":
-      return t !== s;
     case "!=":
       return t != s;
-    case "===":
-      return t === s;
     case "==":
       return t == s;
     case "<":
@@ -149,7 +165,7 @@ function A(t, s, n) {
   }
 }
 export {
-  b as createScope,
-  R as ref
+  N as createScope,
+  w as ref
 };
 //# sourceMappingURL=index.mjs.map
