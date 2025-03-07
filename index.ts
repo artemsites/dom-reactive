@@ -23,17 +23,52 @@ const emitter = mitt();
 
 let stateNamesHashes = new Map();
 
-export function createScope(scopeId: string, scopeApp: () => void) {
+export function createScope(scopeId: string, scope: () => void, alias:string='') {
     const wrapper = document.getElementById(scopeId);
 
     if (wrapper) {
-        const appInstance = scopeApp();
+        const scopeInstance = scope();
 
-        handlerClassesReactive(wrapper, appInstance);
+        handlerClassesReactive(wrapper, scopeInstance);
 
-        window[scopeId] = appInstance;
+        if (alias!=='') {
+            window[alias] = scopeInstance;
+        } else {
+            window[scopeId] = scopeInstance;
+        }
     } else {
         throw Error("Нет wrapper: #" + scopeId);
+    }
+}
+
+export function createComponent(wrapperClass: string, component: () => void) {
+    const wrappers = document.getElementsByClassName(wrapperClass) as HTMLCollection;
+    for (let $wrapper of wrappers) {
+        if ($wrapper) {
+            const componentInstance = component();
+            // ! @todo сделать поиск  по componentInstance найдя все $wrapper.querySelector(`[data-ref]`)
+            for (let i in componentInstance) {
+                // @note create ref in DOM from data-ref
+                if (i.slice(0, 1) === "$") {
+                    componentInstance[i].value = $wrapper.querySelector(`[data-ref="${i}"]`)
+                }
+            }
+
+            // @note handle data-click
+            const elClicks = $wrapper.querySelectorAll(`[data-click]`)
+            elClicks.forEach( ($elClick) => {
+                $elClick.addEventListener("click",function(e) {
+                    let onClick = $elClick.dataset.click
+                    componentInstance[onClick]()
+                });
+            })
+
+            // @note handle data-class
+            handlerClassesReactive($wrapper as HTMLElement, componentInstance);
+        } else {
+            throw Error("Нет wrapper: ." + wrapperClass);
+        }
+
     }
 }
 
@@ -62,7 +97,7 @@ export function ref(defaultValue: any): State {
 }
 
 function handlerClassesReactive($wrapper: HTMLElement, appInstance: any) {
-    if ($wrapper.dataset.class) {
+    if ($wrapper.dataset && $wrapper.dataset.class) {
         handlerClassesReactiveSubFunc1($wrapper);
     }
 
