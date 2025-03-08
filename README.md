@@ -26,6 +26,8 @@ yarn add dom-reactive
 
 
 
+
+
 ## Import dom-reactive in js
 **js module WITHOUT builder**
 ```ts
@@ -39,7 +41,18 @@ import { createScope, ref } from "dom-reactive";
 
 
 
-## Initializing the application in js
+## API
+* `createScope` - creating an area in the DOM for working with the library
+* `createComponent` - defining multiple components of the same type with their own scope
+* `ref` - reactive state OR HTMLElement in DOM
+
+* `data-class` - is an attribute of an HTML element for dynamic class management
+* `data-click` - defines the method that will occur when clicked
+* `data-ref` - defines the name of the variable to which this HTMLElement will be bound in the DOM
+
+
+## createScope
+### Initializing the createScope in js
 ```ts
 createScope("header", () => {
   let isActive = ref(false);
@@ -61,64 +74,89 @@ createScope("header", () => {
 
 ```
 
-
-
-## Using the application in html
+### Using the createScope in html
 Important: each application is an object called the id for which the application is created, for example, "header":
 ```html
-<head>
-  <script type="module" src="./index.js" defer></script>
-</head>
+<header id="header">
+  <button onclick="header.open()">
+    open
+  </button>
 
-<body>
-  <header id="header">
+  <button onclick="header.close()">
+    close
+  </button>
 
-    <button onclick="header.open()">
-      open
-    </button>
+  <div class="target" data-class='{"active": "header.isActive", "active-not": "!header.isActive"}'>
+    test data-class Object JSON - JS check True - False
+  </div>
 
-    <button onclick="header.close()">
-      close
-    </button>
+  <div class="target" data-class='["header.isActive ? active : active-not", "!header.isActive ? test-not : test"]'>
+    test data-class Array JSON - JS check True - False
+  </div>
 
-    <div class="target" data-class='{"active": "header.isActive", "active-not": "!header.isActive"}'>
-      test data-class Object JSON - JS check True - False
-    </div>
+  <div class="target" data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'>
+    test data-class Object JSON - JS Comparsion
+  </div>
 
-    <div class="target" data-class='["header.isActive ? active : active-not", "!header.isActive ? test-not : test"]'>
-      test data-class Array JSON - JS check True - False
-    </div>
+  <div class="target" data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? test3 : test4"]'>
+    test data-class Array JSON - JS Comparsion
+  </div>
+</header>
 
-    <div class="target" data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'>
-      test data-class Object JSON - JS Comparsion
-    </div>
+<footer id="footer">
+  <!-- @note You can use functions from another scope: -->
+  <button onclick="header.close()">
+    close
+  </button>
+</footer>
+```
 
-    <div class="target" data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? test3 : test4"]'>
-      test data-class Array JSON - JS Comparsion
-    </div>
 
-  </header>
+## createComponent
+### Initializing the createComponent in js
+```js
+createComponent('video__wrapper', () => {
+    const $video = ref(null)
+    let isPlaying = ref(false)
 
-  <footer id="footer">
-    <!-- @note You can use functions from another scope: -->
-    <button onclick="header.close()">
-      close
-    </button>
-  </footer>
-</body>
+    function toggleVideo() {
+        if (!isPlaying.value) {
+            $video.value.play()
+            isPlaying.value = true
+        } else {
+            $video.value.pause()
+            isPlaying.value = false
+        }
+    }
+
+    return {
+        toggleVideo,
+        $video,
+        isPlaying
+    }
+})
+```
+
+### Using the createComponent in html
+```html
+<div class="video__wrapper" data-class='{"video__wrapper--playing": "isPlaying"}'>
+    <button data-click="toggleVideo"></button>
+
+    <video
+        data-ref="$video"
+        class="video"
+        playsInline
+        loop
+    >
+        <source src="video.mp4" type="video/mp4" />
+    </video>
+</div>
 ```
 
 
 
-## API
-* `createScope` - creating an area in the DOM for working with the library
-* `ref` - reactive state
-* `data-class` is an attribute of an HTML element for dynamic class management
-
-
-
 ## Functional history:
-### 1.1.3 Added comparison in data-class:  
+### 1.1.3 Added comparison in data-class:
 ```html
 data-class='{"test1": "header.isIdActive == 1", "test2": "header.isIdActive != 1"}'
 ```
@@ -133,6 +171,44 @@ data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? 
 <div data-class='{"--active": "header.isActive"}'>active</div>
 ```
 
-### 1.2.1 Added data-class check at root element
+### 1.2.1 Added data-class check at root element.
 
-### 1.2.2 Emit ref only when the value is changed
+### 1.2.2 Emit ref only when the value is changed.
+
+### 1.3.0 Added the ability to define many components of the same type with their own scope.
+```js
+createComponent('video__wrapper', () => {
+    const $video = ref(null)
+    let isPlaying = ref(false)
+
+    function toggleVideo() {
+        if (!isPlaying.value) {
+            $video.value.play()
+            isPlaying.value = true
+        } else {
+            $video.value.pause()
+            isPlaying.value = false
+        }
+    }
+
+    return {
+        toggleVideo,
+        $video,
+        isPlaying
+    }
+})
+```
+```html
+<div class="video__wrapper" data-class='{"video__wrapper--playing": "isPlaying"}'>
+    <button data-click="toggleVideo"></button>
+
+    <video
+        data-ref="$video"
+        class="video"
+        playsInline
+        loop
+    >
+        <source src="video.mp4" type="video/mp4" />
+    </video>
+</div>
+```

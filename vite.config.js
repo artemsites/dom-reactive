@@ -11,7 +11,7 @@ export default defineConfig({
       },
       formats: ["es"],
     },
-    outDir: "./",
+    outDir: "./dist",
     sourcemap: true,
     minify: "esbuild",
   },
