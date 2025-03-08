@@ -29,15 +29,18 @@ let stateNamesHashes = new Map();
 
 export function createScope(
     scopeId: string,
-    scope: () => void,
+    scope: () => ComponentInstance,
     alias: string = ""
 ) {
-    const wrapper = document.getElementById(scopeId);
+    const $wrapper = document.getElementById(scopeId);
 
-    if (wrapper) {
+    if ($wrapper) {
         const scopeInstance = scope();
 
-        handlerClassesReactive(wrapper, scopeInstance);
+        // @note handle data-click
+        handlerClickReactive($wrapper, scopeInstance);
+
+        handlerClassesReactive($wrapper, scopeInstance);
 
         if (alias !== "") {
             window[alias] = scopeInstance;
@@ -71,23 +74,7 @@ export function createComponent(wrapperClass: string, component: () => {}) {
                 });
 
                 // @note handle data-click
-                const elClicks = $wrapper.querySelectorAll(
-                    `[data-click]`
-                ) as NodeListOf<HTMLElement>;
-                elClicks.forEach(($elOnClick) => {
-                    $elOnClick.addEventListener("click", function (e) {
-                        let methodNameOnClick = $elOnClick.dataset.click;
-                        if (methodNameOnClick) {
-                            const methodOnClick = componentInstance[methodNameOnClick];
-                            methodOnClick();
-                        } else {
-                            console.warn(
-                                "The name of the data-click method was not found in: ",
-                                $elOnClick
-                            );
-                        }
-                    });
-                });
+                handlerClickReactive($wrapper as HTMLElement, componentInstance);
 
                 // @note handle data-class
                 handlerClassesReactive($wrapper as HTMLElement, componentInstance);
@@ -122,7 +109,30 @@ export function ref(defaultValue: any): State {
     return proxyState;
 }
 
-function handlerClassesReactive($wrapper: HTMLElement, appInstance: any) {
+function handlerClickReactive($wrapper: HTMLElement, instance: ComponentInstance) {
+    const elClicks = $wrapper.querySelectorAll(
+        `[data-click]`
+    ) as NodeListOf<HTMLElement>;
+    elClicks.forEach(($elOnClick) => {
+        $elOnClick.addEventListener("click", function (e) {
+            let methodNameOnClick = $elOnClick.dataset.click;
+            if (methodNameOnClick) {
+                // ! Это для убирания префикса например header. - оно пока не мешает в случае если его нет вообще
+                const methodNameOnClickWithoutPrefix = deleteWordPrefix(methodNameOnClick)
+
+                const methodOnClick = instance[methodNameOnClickWithoutPrefix];
+                methodOnClick();
+            } else {
+                console.warn(
+                    "The name of the data-click method was not found in: ",
+                    $elOnClick
+                );
+            }
+        });
+    });
+}
+
+function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentInstance) {
     if ($wrapper.dataset && $wrapper.dataset.class) {
         handlerClassesReactiveSubFunc1($wrapper);
     }

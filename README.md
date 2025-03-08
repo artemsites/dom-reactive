@@ -227,4 +227,4 @@ createComponent('video__wrapper', () => {
 </div>
 ```
 
-### 1.3.1 Added processing `data-click` for createScope as an alternative `onClick`
+### 1.4.1 Added processing `data-click` for createScope as an alternative `onClick`
