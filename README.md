@@ -78,11 +78,21 @@ createScope("header", () => {
 Important: each application is an object called the id for which the application is created, for example, "header":
 ```html
 <header id="header">
+  <!-- [onclick] -->
   <button onclick="header.open()">
     open
   </button>
 
   <button onclick="header.close()">
+    close
+  </button>
+
+  <!-- Or [data-click] -->
+  <button data-click="header.open">
+    open
+  </button>
+
+  <button data-click="header.close">
     close
   </button>
 
@@ -106,6 +116,10 @@ Important: each application is an object called the id for which the application
 <footer id="footer">
   <!-- @note You can use functions from another scope: -->
   <button onclick="header.close()">
+    close
+  </button>
+  <!-- Or [data-click] -->
+  <button data-click="header.close">
     close
   </button>
 </footer>
@@ -212,3 +226,5 @@ createComponent('video__wrapper', () => {
     </video>
 </div>
 ```
+
+### 1.3.1 Added processing `data-click` for createScope as an alternative `onClick`
