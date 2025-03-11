@@ -49,9 +49,11 @@ import { createScope, ref } from "dom-reactive";
 * `data-class` - is an attribute of an HTML element for dynamic class management
 * `data-click` - defines the method that will occur when clicked
 * `data-ref` - defines the name of the variable to which this HTMLElement will be bound in the DOM
+* `data-value` - processing `input[data-value]` with the substitution of a reactive value in input[value]
 
 
-## createScope
+
+## `createScope` - the viewport with its own name in window[name]
 ### Initializing the createScope in js
 ```ts
 createScope("header", () => {
@@ -73,7 +75,6 @@ createScope("header", () => {
 });
 
 ```
-
 ### Using the createScope in html
 Important: each application is an object called the id for which the application is created, for example, "header":
 ```html
@@ -126,38 +127,63 @@ Important: each application is an object called the id for which the application
 ```
 
 
-## createComponent
-### Initializing the createComponent in js
+
+### Using processing `input[data-value]` with the substitution of a reactive value in input[value] **in createScope**
+```html
+  <input type="hidden" name="what" data-value="formModalMini.formModalMiniWhat">
+```
+```js
+createScope("formModalMini", () => {
+    let isFormModalMiniOpened = ref(false);
+    let formModalMiniWhat = ref('')
+
+    function openFormModalMini(what='') {
+        isFormModalMiniOpened.value = true;
+        formModalMiniWhat.value = what
+    }
+
+    return {
+        isFormModalMiniOpened,
+        openFormModalMini,
+        formModalMiniWhat,
+    };
+});
+
+```
+
+
+
+## `createComponent` - a component without its own name in window, used for identical blocks in the DOM
+### Initializing the `createComponent` in js
 ```js
 createComponent('video__wrapper', () => {
-    const $video = ref(null)
+    const video = ref(null)
     let isPlaying = ref(false)
 
     function toggleVideo() {
         if (!isPlaying.value) {
-            $video.value.play()
+            video.value.play()
             isPlaying.value = true
         } else {
-            $video.value.pause()
+            video.value.pause()
             isPlaying.value = false
         }
     }
 
     return {
         toggleVideo,
-        $video,
+        video,
         isPlaying
     }
 })
 ```
-
-### Using the createComponent in html
+### Using the `createComponent` in html
 ```html
 <div class="video__wrapper" data-class='{"video__wrapper--playing": "isPlaying"}'>
     <button data-click="toggleVideo"></button>
 
     <video
-        data-ref="$video"
+        data-ref="video"
         class="video"
         playsInline
         loop
@@ -189,42 +215,8 @@ data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? 
 
 ### 1.2.2 Emit ref only when the value is changed.
 
-### 1.3.0 Added the ability to define many components of the same type with their own scope.
-```js
-createComponent('video__wrapper', () => {
-    const $video = ref(null)
-    let isPlaying = ref(false)
-
-    function toggleVideo() {
-        if (!isPlaying.value) {
-            $video.value.play()
-            isPlaying.value = true
-        } else {
-            $video.value.pause()
-            isPlaying.value = false
-        }
-    }
-
-    return {
-        toggleVideo,
-        $video,
-        isPlaying
-    }
-})
-```
-```html
-<div class="video__wrapper" data-class='{"video__wrapper--playing": "isPlaying"}'>
-    <button data-click="toggleVideo"></button>
-
-    <video
-        data-ref="$video"
-        class="video"
-        playsInline
-        loop
-    >
-        <source src="video.mp4" type="video/mp4" />
-    </video>
-</div>
-```
+### 1.3.0 Added `createComponent` - the ability to define many components of the same type with their own scope.
 
 ### 1.4.1 Added processing `data-click` for createScope as an alternative `onClick`
+
+### 1.5.0 Added processing `input[data-value]` with the substitution of a reactive value in input[value] **in createScope**

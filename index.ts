@@ -30,7 +30,7 @@ let stateNamesHashes = new Map();
 export function createScope(
     scopeId: string,
     scope: () => ComponentInstance,
-    alias: string = ""
+    alias: string = "",
 ) {
     const $wrapper = document.getElementById(scopeId);
 
@@ -40,7 +40,11 @@ export function createScope(
         // @note handle data-click
         handlerClickReactive($wrapper, scopeInstance);
 
+        // @note handle data-class
         handlerClassesReactive($wrapper, scopeInstance);
+
+        // @note handle input[data-value]
+        handlerInputDataValueReactive($wrapper, scopeInstance);
 
         if (alias !== "") {
             window[alias] = scopeInstance;
@@ -54,7 +58,7 @@ export function createScope(
 
 export function createComponent(wrapperClass: string, component: () => {}) {
     const wrappers = document.getElementsByClassName(
-        wrapperClass
+        wrapperClass,
     ) as HTMLCollection;
     for (let $wrapper of wrappers) {
         if ($wrapper) {
@@ -62,22 +66,35 @@ export function createComponent(wrapperClass: string, component: () => {}) {
             if (isObject(componentInstance)) {
                 // @note handle data-ref
                 const refsInDom = $wrapper.querySelectorAll(
-                    `[data-ref]`
+                    `[data-ref]`,
                 ) as NodeListOf<HTMLElement>;
                 refsInDom.forEach(($refEl) => {
                     const refName = $refEl.getAttribute("data-ref");
                     if (refName) {
                         componentInstance[refName].value = $refEl;
                     } else {
-                        console.warn("The data-ref name was not found in: ", $refEl);
+                        console.warn(
+                            "The data-ref name was not found in: ",
+                            $refEl,
+                        );
                     }
                 });
 
                 // @note handle data-click
-                handlerClickReactive($wrapper as HTMLElement, componentInstance);
+                handlerClickReactive(
+                    $wrapper as HTMLElement,
+                    componentInstance,
+                );
 
                 // @note handle data-class
-                handlerClassesReactive($wrapper as HTMLElement, componentInstance);
+                handlerClassesReactive(
+                    $wrapper as HTMLElement,
+                    componentInstance,
+                );
+
+                // @note handle input[data-value]
+                // ! @todo not tested!!!
+                handlerInputDataValueReactive($wrapper, componentInstance);
             }
         } else {
             throw Error("Нет wrapper: ." + wrapperClass);
@@ -109,36 +126,65 @@ export function ref(defaultValue: any): State {
     return proxyState;
 }
 
-function handlerClickReactive($wrapper: HTMLElement, instance: ComponentInstance) {
+function handlerInputDataValueReactive($wrapper, instance) {
+    const dataValues = $wrapper.querySelectorAll(
+        `[data-value]`,
+    ) as NodeListOf<HTMLInputElement>;
+
+    dataValues.forEach(($dataValue) => {
+        const dataValue: string | null = $dataValue.dataset.value || null;
+
+        if (dataValue) {
+            const jsExpressionWithPrefix: string = dataValue;
+            let jsExpression = deleteWordPrefix(jsExpressionWithPrefix);
+            const state = instance[jsExpression];
+
+            $dataValue.value = state.value;
+            const stateNameHash = stateNamesHashes.get(state);
+            emitter.on(stateNameHash, (newState: any) => {
+                $dataValue.value = newState.value;
+            });
+        }
+    });
+}
+
+function handlerClickReactive(
+    $wrapper: HTMLElement,
+    instance: ComponentInstance,
+) {
     const elClicks = $wrapper.querySelectorAll(
-        `[data-click]`
+        `[data-click]`,
     ) as NodeListOf<HTMLElement>;
     elClicks.forEach(($elOnClick) => {
         $elOnClick.addEventListener("click", function (e) {
             let methodNameOnClick = $elOnClick.dataset.click;
             if (methodNameOnClick) {
                 // ! Это для убирания префикса например header. - оно пока не мешает в случае если его нет вообще
-                const methodNameOnClickWithoutPrefix = deleteWordPrefix(methodNameOnClick)
+                const methodNameOnClickWithoutPrefix =
+                    deleteWordPrefix(methodNameOnClick);
 
                 const methodOnClick = instance[methodNameOnClickWithoutPrefix];
                 methodOnClick();
             } else {
                 console.warn(
                     "The name of the data-click method was not found in: ",
-                    $elOnClick
+                    $elOnClick,
                 );
             }
         });
     });
 }
 
-function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentInstance) {
+function handlerClassesReactive(
+    $wrapper: HTMLElement,
+    instance: ComponentInstance,
+) {
     if ($wrapper.dataset && $wrapper.dataset.class) {
         handlerClassesReactiveSubFunc1($wrapper);
     }
 
     const $elementsWithDataClasses = $wrapper.querySelectorAll(
-        "[data-class]"
+        "[data-class]",
     ) as NodeListOf<HTMLElement>;
     $elementsWithDataClasses.forEach(($el) => {
         handlerClassesReactiveSubFunc1($el);
@@ -169,13 +215,21 @@ function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentIns
                     const classNameFalse = match[3];
                     const className = [classNameTrue, classNameFalse];
 
-                    handlerClassesReactiveSubFunc2($el, className, jsNameWithPrefix);
+                    handlerClassesReactiveSubFunc2(
+                        $el,
+                        className,
+                        jsNameWithPrefix,
+                    );
                 }
             } else if (isObject(parsedJson)) {
                 for (let className in parsedJson) {
                     let jsNameWithPrefix = parsedJson[className];
 
-                    handlerClassesReactiveSubFunc2($el, className, jsNameWithPrefix);
+                    handlerClassesReactiveSubFunc2(
+                        $el,
+                        className,
+                        jsNameWithPrefix,
+                    );
                 }
             }
         } else {
@@ -186,7 +240,7 @@ function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentIns
     function handlerClassesReactiveSubFunc2(
         $el: HTMLElement,
         className: string | string[],
-        jsNameWithPrefix: string
+        jsNameWithPrefix: string,
     ) {
         let isRevertVal = false;
         if (jsNameWithPrefix[0] === "!") {
@@ -208,7 +262,7 @@ function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentIns
                     operator,
                     isRevertVal,
                     className,
-                    $el
+                    $el,
                 );
             } else if (isEqualExpression) {
                 const regex = /==/;
@@ -219,7 +273,7 @@ function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentIns
                     operator,
                     isRevertVal,
                     className,
-                    $el
+                    $el,
                 );
             }
         } else {
@@ -232,7 +286,7 @@ function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentIns
                 operator,
                 isRevertVal,
                 className,
-                $el
+                $el,
             );
         }
     }
@@ -243,7 +297,7 @@ function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentIns
         operator: any,
         isRevertVal: any,
         className: any,
-        $el: any
+        $el: any,
     ) {
         const res = splitExpression(jsExpression, regex);
         if (res && res.length === 2) {
@@ -254,7 +308,7 @@ function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentIns
                 operator,
                 isRevertVal,
                 className,
-                $el
+                $el,
             );
         }
     }
@@ -265,9 +319,9 @@ function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentIns
         operator: any,
         isRevertVal: any,
         className: any,
-        $el: any
+        $el: any,
     ) {
-        const state = appInstance[jsName];
+        const state = instance[jsName];
         const isTrue = compare(state.value, jsVal, operator);
 
         toggleClass(isTrue, className, $el, isRevertVal);
@@ -283,7 +337,7 @@ function handlerClassesReactive($wrapper: HTMLElement, appInstance: ComponentIns
         value: any,
         className: string | string[],
         where: HTMLElement,
-        isRevertVal = false
+        isRevertVal = false,
     ) {
         try {
             const isTrue = (value && !isRevertVal) || (!value && isRevertVal);
@@ -320,7 +374,7 @@ function deleteWordPrefix(strWithprefixWithDot: string) {
 
 function splitExpression(
     expression: string,
-    regex: RegExp
+    regex: RegExp,
 ): [string, string] | null {
     const parts = expression.split(regex);
 
