@@ -322,15 +322,19 @@ function handlerClassesReactive(
         $el: any,
     ) {
         const state = instance[jsName];
-        const isTrue = compare(state.value, jsVal, operator);
+        if (!state) {
+            showWarnIfRefNotFound($wrapper, jsName)
+        } else {
+            const isTrue = compare(state.value, jsVal, operator);
 
-        toggleClass(isTrue, className, $el, isRevertVal);
-        const stateNameHash = stateNamesHashes.get(state);
-
-        emitter.on(stateNameHash, (newState: any) => {
-            const isTrue = compare(newState.value, jsVal, operator);
             toggleClass(isTrue, className, $el, isRevertVal);
-        });
+            const stateNameHash = stateNamesHashes.get(state);
+
+            emitter.on(stateNameHash, (newState: any) => {
+                const isTrue = compare(newState.value, jsVal, operator);
+                toggleClass(isTrue, className, $el, isRevertVal);
+            });
+        }
     }
 
     function toggleClass(
@@ -363,7 +367,12 @@ function handlerClassesReactive(
     }
 }
 
-// @note tools:
+function showWarnIfRefNotFound($wrapper, jsName) {
+    const instanceId = '#'+$wrapper.getAttribute('id') || '.'+$wrapper.getAttribute('class')
+    console.warn(`Ref ${jsName} is not exists at ${instanceId}. Perhaps the component is located in another component.`);
+}
+
+// ! tools:
 function isObject(value: any) {
     return value !== null && typeof value === "object";
 }

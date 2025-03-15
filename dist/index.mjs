@@ -1,71 +1,71 @@
-function k(e) {
-  return { all: e = e || /* @__PURE__ */ new Map(), on: function(s, o) {
+function I(e) {
+  return { all: e = e || /* @__PURE__ */ new Map(), on: function(s, n) {
     var t = e.get(s);
-    t ? t.push(o) : e.set(s, [o]);
-  }, off: function(s, o) {
+    t ? t.push(n) : e.set(s, [n]);
+  }, off: function(s, n) {
     var t = e.get(s);
-    t && (o ? t.splice(t.indexOf(o) >>> 0, 1) : e.set(s, []));
-  }, emit: function(s, o) {
+    t && (n ? t.splice(t.indexOf(n) >>> 0, 1) : e.set(s, []));
+  }, emit: function(s, n) {
     var t = e.get(s);
-    t && t.slice().map(function(n) {
-      n(o);
-    }), (t = e.get("*")) && t.slice().map(function(n) {
-      n(s, o);
+    t && t.slice().map(function(o) {
+      o(n);
+    }), (t = e.get("*")) && t.slice().map(function(o) {
+      o(s, n);
     });
   } };
 }
-const E = k();
+const E = I();
 let y = /* @__PURE__ */ new Map();
-function L(e, s, o = "") {
+function R(e, s, n = "") {
   const t = document.getElementById(e);
   if (t) {
-    const n = s();
-    j(t, n), S(t, n), A(t, n), o !== "" ? window[o] = n : window[e] = n;
+    const o = s();
+    S(t, o), j(t, o), C(t, o), n !== "" ? window[n] = o : window[e] = o;
   } else
     throw Error("Нет wrapper: #" + e);
 }
-function T(e, s) {
-  const o = document.getElementsByClassName(
+function L(e, s) {
+  const n = document.getElementsByClassName(
     e
   );
-  for (let t of o)
+  for (let t of n)
     if (t) {
-      const n = s();
-      N(n) && (t.querySelectorAll(
+      const o = s();
+      N(o) && (t.querySelectorAll(
         "[data-ref]"
       ).forEach((u) => {
         const m = u.getAttribute("data-ref");
-        m ? n[m].value = u : console.warn(
+        m ? o[m].value = u : console.warn(
           "The data-ref name was not found in: ",
           u
         );
-      }), j(
+      }), S(
         t,
-        n
-      ), S(
+        o
+      ), j(
         t,
-        n
-      ), A(t, n));
+        o
+      ), C(t, o));
     } else
       throw Error("Нет wrapper: ." + e);
 }
-function b(e) {
+function T(e) {
   const s = `state_${crypto.randomUUID()}`;
-  let o = { value: e };
-  const t = new Proxy(o, {
-    set(n, p, u) {
-      return p === "value" ? (n.value !== u && (n.value = u, E.emit(s, n)), !0) : !1;
+  let n = { value: e };
+  const t = new Proxy(n, {
+    set(o, p, u) {
+      return p === "value" ? (o.value !== u && (o.value = u, E.emit(s, o)), !0) : !1;
     }
   });
   return y.set(t, s), E.emit(s, t), t;
 }
-function A(e, s) {
+function C(e, s) {
   e.querySelectorAll(
     "[data-value]"
   ).forEach((t) => {
-    const n = t.dataset.value || null;
-    if (n) {
-      let u = v(n);
+    const o = t.dataset.value || null;
+    if (o) {
+      let u = v(o);
       const m = s[u];
       t.value = m.value;
       const a = y.get(m);
@@ -75,11 +75,11 @@ function A(e, s) {
     }
   });
 }
-function j(e, s) {
+function S(e, s) {
   e.querySelectorAll(
     "[data-click]"
   ).forEach((t) => {
-    t.addEventListener("click", function(n) {
+    t.addEventListener("click", function(o) {
       let p = t.dataset.click;
       if (p) {
         const u = v(p), m = s[u];
@@ -92,7 +92,7 @@ function j(e, s) {
     });
   });
 }
-function S(e, s) {
+function j(e, s) {
   e.dataset && e.dataset.class && t(e), e.querySelectorAll(
     "[data-class]"
   ).forEach((a) => {
@@ -113,17 +113,17 @@ function S(e, s) {
           let l = r[i];
           const d = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, f = l.match(d);
           let h = f[1];
-          const x = f[2], g = f[3];
-          n(
+          const g = f[2], x = f[3];
+          o(
             a,
-            [x, g],
+            [g, x],
             h
           );
         }
       else if (N(r))
         for (let i in r) {
           let l = r[i];
-          n(
+          o(
             a,
             i,
             l
@@ -132,7 +132,7 @@ function S(e, s) {
     } else
       console.warn("The data-class JSON string was not found in: ", a);
   }
-  function n(a, c, r) {
+  function o(a, c, r) {
     let i = !1;
     r[0] === "!" && (i = !0, r = r.slice(1));
     let l = v(r);
@@ -161,12 +161,12 @@ function S(e, s) {
     );
   }
   function p(a, c, r, i, l, d) {
-    const f = I(a, c);
+    const f = k(a, c);
     if (f && f.length === 2) {
-      const [h, x] = f;
+      const [h, g] = f;
       u(
         h,
-        x,
+        g,
         r,
         i,
         l,
@@ -175,13 +175,18 @@ function S(e, s) {
     }
   }
   function u(a, c, r, i, l, d) {
-    const f = s[a], h = C(f.value, c, r);
-    m(h, l, d, i);
-    const x = y.get(f);
-    E.on(x, (g) => {
-      const w = C(g.value, c, r);
-      m(w, l, d, i);
-    });
+    const f = s[a];
+    if (!f)
+      b(e, a);
+    else {
+      const h = w(f.value, c, r);
+      m(h, l, d, i);
+      const g = y.get(f);
+      E.on(g, (x) => {
+        const A = w(x.value, c, r);
+        m(A, l, d, i);
+      });
+    }
   }
   function m(a, c, r, i = !1) {
     try {
@@ -197,18 +202,22 @@ function S(e, s) {
     }
   }
 }
+function b(e, s) {
+  const n = "#" + e.getAttribute("id") || "." + e.getAttribute("class");
+  console.warn(`Ref ${s} is not exists at ${n}. Perhaps the component is located in another component.`);
+}
 function N(e) {
   return e !== null && typeof e == "object";
 }
 function v(e) {
   return e.replace(/^\w+\./, "");
 }
-function I(e, s) {
-  const o = e.split(s);
-  return o.length === 2 ? [o[0].trim(), o[1].trim()] : null;
+function k(e, s) {
+  const n = e.split(s);
+  return n.length === 2 ? [n[0].trim(), n[1].trim()] : null;
 }
-function C(e, s, o) {
-  switch (o) {
+function w(e, s, n) {
+  switch (n) {
     case "!=":
       return e != s;
     case "==":
@@ -226,8 +235,8 @@ function C(e, s, o) {
   }
 }
 export {
-  T as createComponent,
-  L as createScope,
-  b as ref
+  L as createComponent,
+  R as createScope,
+  T as ref
 };
 //# sourceMappingURL=index.mjs.map

@@ -217,6 +217,9 @@ data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? 
 
 ### 1.3.0 Added `createComponent` - the ability to define many components of the same type with their own scope.
 
-### 1.4.1 Added processing `data-click` for createScope as an alternative `onClick`
+### 1.4.1 Added processing `data-click` for createScope as an alternative `onClick`.
 
-### 1.5.0 Added processing `input[data-value]` with the substitution of a reactive value in input[value] **in createScope**
+### 1.5.0 Added processing `input[data-value]` with the substitution of a reactive value in input[value] **in createScope**.
+
+### 1.5.1 Displaying a warning in the console when components of a component are being parsed inside another component.
+
