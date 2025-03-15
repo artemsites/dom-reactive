@@ -1,4 +1,4 @@
-function S(t) {
+function L(t) {
   return { all: t = t || /* @__PURE__ */ new Map(), on: function(s, o) {
     var e = t.get(s);
     e ? e.push(o) : t.set(s, [o]);
@@ -14,8 +14,8 @@ function S(t) {
     });
   } };
 }
-const C = S();
-let A = /* @__PURE__ */ new Map();
+const A = L();
+let v = /* @__PURE__ */ new Map();
 function O(t, s, o = "") {
   const e = document.getElementById(t);
   if (e) {
@@ -31,7 +31,10 @@ function P(t, s) {
   for (let e of o)
     if (e) {
       const n = s();
-      L(n) && (T(e, n), I(e, n), R(e, n), N(e, n), j(e, n));
+      b(n) && (S(e, n), I(e, n), R(e, n), N(
+        e,
+        n
+      ), j(e, n));
     } else
       throw Error("Нет wrapper: ." + t);
 }
@@ -39,28 +42,28 @@ function D(t) {
   const s = `state_${crypto.randomUUID()}`;
   let o = { value: t };
   const e = new Proxy(o, {
-    set(n, h, d) {
-      return h === "value" ? (n.value !== d && (n.value = d, C.emit(s, n)), !0) : !1;
+    set(n, m, u) {
+      return m === "value" ? (n.value !== u && (n.value = u, A.emit(s, n)), !0) : !1;
     }
   });
-  return A.set(e, s), C.emit(s, e), e;
+  return v.set(e, s), A.emit(s, e), e;
 }
-function T(t, s) {
-  x("[data-ref]", t).forEach((e) => {
+function S(t, s) {
+  x("data-ref", t).forEach((e) => {
     const n = e.getAttribute("data-ref");
     n ? s[n].value = e : console.warn("The data-ref name was not found in: ", e);
   });
 }
 function N(t, s) {
-  x("[data-value]", t).forEach((e) => {
+  x("data-value", t).forEach((e) => {
     if (e instanceof HTMLInputElement) {
       const n = e.dataset.value || null;
       if (n) {
-        let d = v(n);
-        const g = s[d];
+        let u = C(n);
+        const g = s[u];
         e.value = g.value;
-        const r = A.get(g);
-        C.on(r, (c) => {
+        const r = v.get(g);
+        A.on(r, (c) => {
           e.value = c.value;
         });
       }
@@ -68,13 +71,13 @@ function N(t, s) {
   });
 }
 function I(t, s) {
-  const o = x("[data-click]", t);
+  const o = x("data-click", t);
   o.length && o.forEach((e) => {
     let n = e.dataset.click;
     if (n) {
-      const h = v(n), d = s[h];
+      const m = C(n), u = s[m];
       e.addEventListener("click", function(g) {
-        d();
+        u();
       });
     } else
       console.warn(
@@ -84,14 +87,16 @@ function I(t, s) {
   });
 }
 function j(t, s) {
-  const o = x("[data-change]", t);
+  const o = x("data-change", t);
   o.length && o.forEach((e) => {
-    let n = e.dataset.change;
-    if (n) {
-      const h = v(n), d = s[h];
-      e.addEventListener("change", function(g) {
-        d();
-      });
+    if (e) {
+      let n = e.dataset.change;
+      if (n) {
+        const m = C(n), u = s[m];
+        u && e.addEventListener("change", function(g) {
+          u();
+        });
+      }
     } else
       console.warn(
         "The name of the data-click method was not found in: ",
@@ -100,7 +105,7 @@ function j(t, s) {
   });
 }
 function R(t, s) {
-  x("[data-class]", t).forEach((r) => {
+  x("data-class", t).forEach((r) => {
     e(r);
   });
   function e(r) {
@@ -116,15 +121,23 @@ function R(t, s) {
       if (Array.isArray(a))
         for (let i in a) {
           let l = a[i];
-          const u = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, f = l.match(u);
-          let m = f[1];
+          const d = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, f = l.match(d);
+          let h = f[1];
           const p = f[2], E = f[3];
-          n(r, [p, E], m);
+          n(
+            r,
+            [p, E],
+            h
+          );
         }
-      else if (L(a))
+      else if (b(a))
         for (let i in a) {
           let l = a[i];
-          n(r, i, l);
+          n(
+            r,
+            i,
+            l
+          );
         }
     } else
       console.warn("The data-class JSON string was not found in: ", r);
@@ -132,23 +145,23 @@ function R(t, s) {
   function n(r, c, a) {
     let i = !1;
     a[0] === "!" && (i = !0, a = a.slice(1));
-    let l = v(a);
-    const u = l.includes("!="), f = l.includes("==");
-    u || f ? u ? h(
+    let l = C(a);
+    const d = l.includes("!="), f = l.includes("==");
+    d || f ? d ? m(
       l,
       /!=/,
       "!=",
       i,
       c,
       r
-    ) : f && h(
+    ) : f && m(
       l,
       /==/,
       "==",
       i,
       c,
       r
-    ) : d(
+    ) : u(
       l,
       !0,
       "==",
@@ -157,31 +170,31 @@ function R(t, s) {
       r
     );
   }
-  function h(r, c, a, i, l, u) {
+  function m(r, c, a, i, l, d) {
     const f = k(r, c);
     if (f && f.length === 2) {
-      const [m, p] = f;
-      d(
-        m,
+      const [h, p] = f;
+      u(
+        h,
         p,
         a,
         i,
         l,
-        u
+        d
       );
     }
   }
-  function d(r, c, a, i, l, u) {
+  function u(r, c, a, i, l, d) {
     const f = s[r];
     if (!f)
-      b(t, r);
+      T(t, r);
     else {
-      const m = y(f.value, c, a);
-      g(m, l, u, i);
-      const p = A.get(f);
-      C.on(p, (E) => {
-        const w = y(E.value, c, a);
-        g(w, l, u, i);
+      const h = w(f.value, c, a);
+      g(h, l, d, i);
+      const p = v.get(f);
+      A.on(p, (E) => {
+        const y = w(E.value, c, a);
+        g(y, l, d, i);
       });
     }
   }
@@ -191,31 +204,31 @@ function R(t, s) {
       if (typeof c == "string")
         l ? a.classList.add(c) : a.classList.remove(c);
       else if (Array.isArray(c)) {
-        const [u, f] = c;
-        l ? (a.classList.remove(f), a.classList.add(u)) : (a.classList.remove(u), a.classList.add(f));
+        const [d, f] = c;
+        l ? (a.classList.remove(f), a.classList.add(d)) : (a.classList.remove(d), a.classList.add(f));
       }
     } catch (l) {
       console.error(l);
     }
   }
 }
-function b(t, s) {
+function T(t, s) {
   const o = "#" + t.getAttribute("id") || "." + t.getAttribute("class");
   console.warn(
     `Ref ${s} is not exists at ${o}. Perhaps the component is located in another component.`
   );
 }
-function L(t) {
+function b(t) {
   return t !== null && typeof t == "object";
 }
-function v(t) {
+function C(t) {
   return t.replace(/^\w+\./, "");
 }
 function k(t, s) {
   const o = t.split(s);
   return o.length === 2 ? [o[0].trim(), o[1].trim()] : null;
 }
-function y(t, s, o) {
+function w(t, s, o) {
   switch (o) {
     case "!=":
       return t != s;
@@ -234,8 +247,8 @@ function y(t, s, o) {
   }
 }
 function x(t, s) {
-  const o = s.querySelectorAll(t), e = [...Array.from(o)];
-  return s.dataset && s.dataset.ref && e.push(s), e;
+  const o = s.querySelectorAll(`[${t}]`), e = [...Array.from(o)];
+  return s.dataset && s.getAttribute(t) && e.push(s), e;
 }
 export {
   P as createComponent,
