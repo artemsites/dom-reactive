@@ -51,6 +51,9 @@ export function createScope(
         // @note handle data-change
         handlerChangeReactive($wrapper, scopeInstance);
 
+        // @note handle data-input
+        handlerInputReactive($wrapper, scopeInstance);
+
         if (alias !== "") {
             window[alias] = scopeInstance;
         } else {
@@ -87,6 +90,9 @@ export function createComponent(wrapperClass: string, component: () => {}) {
 
                 // @note handle data-change
                 handlerChangeReactive($wrapper as Wrapper, componentInstance);
+
+                // @note handle data-input
+                handlerInputReactive($wrapper, componentInstance);
             }
         } else {
             throw Error("Нет wrapper: ." + wrapperClass);
@@ -139,7 +145,7 @@ function handlerInputDataValueReactive(
 
     dataValues.forEach(($dataValue) => {
         if ($dataValue instanceof HTMLInputElement) {
-            const dataValue: string | null = $dataValue.dataset.value || null;
+            const dataValue: string | null = $dataValue.getAttribute('data-value') || null;
 
             if (dataValue) {
                 const jsExpressionWithPrefix: string = dataValue;
@@ -161,7 +167,7 @@ function handlerClickReactive($wrapper: Wrapper, instance: ComponentInstance) {
 
     if (elClicks.length) {
         elClicks.forEach(($elOnClick) => {
-            let methodNameOnClick = $elOnClick.dataset.click;
+            let methodNameOnClick = $elOnClick.getAttribute('data-click');
 
             if (methodNameOnClick) {
                 // ! Это для убирания префикса например header. - оно пока не мешает в случае если его нет вообще
@@ -170,7 +176,7 @@ function handlerClickReactive($wrapper: Wrapper, instance: ComponentInstance) {
 
                 const methodOnClick = instance[methodNameOnClickWithoutPrefix];
                 $elOnClick.addEventListener("click", function (e) {
-                    methodOnClick();
+                    methodOnClick(e);
                 });
             } else {
                 console.warn(
@@ -188,7 +194,7 @@ function handlerChangeReactive($wrapper: Wrapper, instance: ComponentInstance) {
     if (elChanges.length) {
         elChanges.forEach(($elOnchange) => {
             if ($elOnchange) {
-                let methodNameOnChange = $elOnchange.dataset.change;
+                let methodNameOnChange = $elOnchange.getAttribute('data-change');
                 if (methodNameOnChange) {
                     // ! Это для убирания префикса например header. - оно пока не мешает в случае если его нет вообще
                     const methodNameOnChangeWithoutPrefix =
@@ -197,7 +203,7 @@ function handlerChangeReactive($wrapper: Wrapper, instance: ComponentInstance) {
                         instance[methodNameOnChangeWithoutPrefix];
                     if (methodOnChange) {
                         $elOnchange.addEventListener("change", function (e) {
-                            methodOnChange();
+                            methodOnChange(e);
                         });
                     }
                 }
@@ -205,6 +211,34 @@ function handlerChangeReactive($wrapper: Wrapper, instance: ComponentInstance) {
                 console.warn(
                     "The name of the data-click method was not found in: ",
                     $elOnchange
+                );
+            }
+        });
+    }
+}
+
+function handlerInputReactive($wrapper: Wrapper, instance: ComponentInstance) {
+    const elInputs = findAllByAttr("data-input", $wrapper);
+    if (elInputs.length) {
+        elInputs.forEach(($elOnInput) => {
+            if ($elOnInput) {
+                let methodNameOnInput = $elOnInput.getAttribute('data-input');
+                if (methodNameOnInput) {
+                    // ! Это для убирания префикса например header. - оно пока не мешает в случае если его нет вообще
+                    const methodNameOnInputWithoutPrefix =
+                        deleteWordPrefix(methodNameOnInput);
+                    const methodOnInput =
+                        instance[methodNameOnInputWithoutPrefix];
+                    if (methodOnInput) {
+                        $elOnInput.addEventListener("input", function (e) {
+                            methodOnInput(e);
+                        });
+                    }
+                }
+            } else {
+                console.warn(
+                    "The name of the data-click method was not found in: ",
+                    $elOnInput
                 );
             }
         });
@@ -222,7 +256,7 @@ function handlerClassesReactive(
     });
 
     function handlerClassesReactiveSubFunc1($el: HTMLElement) {
-        let jsonString = $el.dataset.class;
+        let jsonString = $el.getAttribute('data-class');
         if (jsonString) {
             $el.removeAttribute("data-class");
 
