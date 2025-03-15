@@ -223,3 +223,4 @@ data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? 
 
 ### 1.5.1 Displaying a warning in the console when components of a component are being parsed inside another component.
 
+### 1.6.0 Added processing `input[data-change]` and add processing attributes on the root wrapper of a component.

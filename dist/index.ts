@@ -9,18 +9,20 @@
  */
 import mitt from "mitt";
 
+type Wrapper = any;
+
 interface ComponentInstance {
-    [key: string]: any;
+  [key: string]: any;
 }
 
 interface State {
-    value: any;
+  value: any;
 }
 
 declare global {
-    interface Window {
-        [key: string]: any;
-    }
+  interface Window {
+    [key: string]: any;
+  }
 }
 
 const emitter = mitt();
@@ -28,387 +30,419 @@ const emitter = mitt();
 let stateNamesHashes = new Map();
 
 export function createScope(
-    scopeId: string,
-    scope: () => ComponentInstance,
-    alias: string = "",
+  scopeId: string,
+  scope: () => ComponentInstance,
+  alias: string = ""
 ) {
-    const $wrapper = document.getElementById(scopeId);
+  const $wrapper = document.getElementById(scopeId);
 
-    if ($wrapper) {
-        const scopeInstance = scope();
+  if ($wrapper) {
+    const scopeInstance = scope();
 
-        // @note handle data-click
-        handlerClickReactive($wrapper, scopeInstance);
+    // @note handle data-click
+    handlerClickReactive($wrapper, scopeInstance);
 
-        // @note handle data-class
-        handlerClassesReactive($wrapper, scopeInstance);
+    // @note handle data-class
+    handlerClassesReactive($wrapper, scopeInstance);
 
-        // @note handle input[data-value]
-        handlerInputDataValueReactive($wrapper, scopeInstance);
+    // @note handle input[data-value]
+    handlerInputDataValueReactive($wrapper, scopeInstance);
 
-        if (alias !== "") {
-            window[alias] = scopeInstance;
-        } else {
-            window[scopeId] = scopeInstance;
-        }
+    // @note handle data-change
+    handlerChangeReactive($wrapper, scopeInstance);
+
+    if (alias !== "") {
+      window[alias] = scopeInstance;
     } else {
-        throw Error("Нет wrapper: #" + scopeId);
+      window[scopeId] = scopeInstance;
     }
+  } else {
+    throw Error("Нет wrapper: #" + scopeId);
+  }
 }
 
 export function createComponent(wrapperClass: string, component: () => {}) {
-    const wrappers = document.getElementsByClassName(
-        wrapperClass,
-    ) as HTMLCollection;
-    for (let $wrapper of wrappers) {
-        if ($wrapper) {
-            const componentInstance: ComponentInstance = component();
-            if (isObject(componentInstance)) {
-                // @note handle data-ref
-                const refsInDom = $wrapper.querySelectorAll(
-                    `[data-ref]`,
-                ) as NodeListOf<HTMLElement>;
-                refsInDom.forEach(($refEl) => {
-                    const refName = $refEl.getAttribute("data-ref");
-                    if (refName) {
-                        componentInstance[refName].value = $refEl;
-                    } else {
-                        console.warn(
-                            "The data-ref name was not found in: ",
-                            $refEl,
-                        );
-                    }
-                });
+  const wrappers = document.getElementsByClassName(
+    wrapperClass
+  ) as HTMLCollection;
+  for (let $wrapper of wrappers) {
+    if ($wrapper) {
+      const componentInstance: ComponentInstance = component();
+      if (isObject(componentInstance)) {
+        // @note handle data-ref
+        handlerRefsInDom($wrapper as Wrapper, componentInstance);
 
-                // @note handle data-click
-                handlerClickReactive(
-                    $wrapper as HTMLElement,
-                    componentInstance,
-                );
+        // @note handle data-click
+        handlerClickReactive($wrapper as Wrapper, componentInstance);
 
-                // @note handle data-class
-                handlerClassesReactive(
-                    $wrapper as HTMLElement,
-                    componentInstance,
-                );
+        // @note handle data-class
+        handlerClassesReactive($wrapper as Wrapper, componentInstance);
 
-                // @note handle input[data-value]
-                // ! @todo not tested!!!
-                handlerInputDataValueReactive($wrapper, componentInstance);
-            }
-        } else {
-            throw Error("Нет wrapper: ." + wrapperClass);
-        }
+        // @note handle input[data-value]
+        // ! @todo not tested!!!
+        handlerInputDataValueReactive($wrapper as Wrapper, componentInstance);
+
+        // @note handle data-change
+        handlerChangeReactive($wrapper as Wrapper, componentInstance);
+      }
+    } else {
+      throw Error("Нет wrapper: ." + wrapperClass);
     }
+  }
 }
 
 export function ref(defaultValue: any): State {
-    const stateNameHash = `state_${crypto.randomUUID()}`;
-    let state: State = { value: defaultValue };
+  const stateNameHash = `state_${crypto.randomUUID()}`;
+  let state: State = { value: defaultValue };
 
-    const proxyState = new Proxy<State>(state, {
-        set(stateTarget, prop, valueNew) {
-            if (prop === "value") {
-                if (stateTarget["value"] !== valueNew) {
-                    stateTarget["value"] = valueNew;
-                    emitter.emit(stateNameHash, stateTarget);
-                }
-                return true;
-            }
-            return false;
-        },
-    });
-
-    stateNamesHashes.set(proxyState, stateNameHash);
-
-    emitter.emit(stateNameHash, proxyState);
-
-    return proxyState;
-}
-
-function handlerInputDataValueReactive($wrapper, instance) {
-    const dataValues = $wrapper.querySelectorAll(
-        `[data-value]`,
-    ) as NodeListOf<HTMLInputElement>;
-
-    dataValues.forEach(($dataValue) => {
-        const dataValue: string | null = $dataValue.dataset.value || null;
-
-        if (dataValue) {
-            const jsExpressionWithPrefix: string = dataValue;
-            let jsExpression = deleteWordPrefix(jsExpressionWithPrefix);
-            const state = instance[jsExpression];
-
-            $dataValue.value = state.value;
-            const stateNameHash = stateNamesHashes.get(state);
-            emitter.on(stateNameHash, (newState: any) => {
-                $dataValue.value = newState.value;
-            });
+  const proxyState = new Proxy<State>(state, {
+    set(stateTarget, prop, valueNew) {
+      if (prop === "value") {
+        if (stateTarget["value"] !== valueNew) {
+          stateTarget["value"] = valueNew;
+          emitter.emit(stateNameHash, stateTarget);
         }
-    });
+        return true;
+      }
+      return false;
+    },
+  });
+
+  stateNamesHashes.set(proxyState, stateNameHash);
+
+  emitter.emit(stateNameHash, proxyState);
+
+  return proxyState;
 }
 
-function handlerClickReactive(
-    $wrapper: HTMLElement,
-    instance: ComponentInstance,
-) {
-    const elClicks = $wrapper.querySelectorAll(
-        `[data-click]`,
-    ) as NodeListOf<HTMLElement>;
-    elClicks.forEach(($elOnClick) => {
-        $elOnClick.addEventListener("click", function (e) {
-            let methodNameOnClick = $elOnClick.dataset.click;
-            if (methodNameOnClick) {
-                // ! Это для убирания префикса например header. - оно пока не мешает в случае если его нет вообще
-                const methodNameOnClickWithoutPrefix =
-                    deleteWordPrefix(methodNameOnClick);
+function handlerRefsInDom($wrapper: Wrapper, instance: ComponentInstance) {
+  const refsInDomAll = findAll("[data-ref]", $wrapper);
 
-                const methodOnClick = instance[methodNameOnClickWithoutPrefix];
-                methodOnClick();
-            } else {
-                console.warn(
-                    "The name of the data-click method was not found in: ",
-                    $elOnClick,
-                );
-            }
+  refsInDomAll.forEach(($refEl) => {
+    const refName = $refEl.getAttribute("data-ref");
+    if (refName) {
+      instance[refName].value = $refEl;
+    } else {
+      console.warn("The data-ref name was not found in: ", $refEl);
+    }
+  });
+}
+
+function handlerInputDataValueReactive(
+  $wrapper: Wrapper,
+  instance: ComponentInstance
+) {
+  const dataValues = findAll("[data-value]", $wrapper);
+
+  dataValues.forEach(($dataValue) => {
+    if ($dataValue instanceof HTMLInputElement) {
+      const dataValue: string | null = $dataValue.dataset.value || null;
+
+      if (dataValue) {
+        const jsExpressionWithPrefix: string = dataValue;
+        let jsExpression = deleteWordPrefix(jsExpressionWithPrefix);
+        const state = instance[jsExpression];
+
+        $dataValue.value = state.value;
+        const stateNameHash = stateNamesHashes.get(state);
+        emitter.on(stateNameHash, (newState: any) => {
+          $dataValue.value = newState.value;
         });
+      }
+    }
+  });
+}
+
+function handlerClickReactive($wrapper: Wrapper, instance: ComponentInstance) {
+  const elClicks = findAll("[data-click]", $wrapper);
+
+  if (elClicks.length) {
+    elClicks.forEach(($elOnClick) => {
+      let methodNameOnClick = $elOnClick.dataset.click;
+
+      if (methodNameOnClick) {
+        // ! Это для убирания префикса например header. - оно пока не мешает в случае если его нет вообще
+        const methodNameOnClickWithoutPrefix =
+          deleteWordPrefix(methodNameOnClick);
+
+        const methodOnClick = instance[methodNameOnClickWithoutPrefix];
+        $elOnClick.addEventListener("click", function (e) {
+          methodOnClick();
+        });
+      } else {
+        console.warn(
+          "The name of the data-click method was not found in: ",
+          $elOnClick
+        );
+      }
     });
+  }
+}
+
+function handlerChangeReactive($wrapper: Wrapper, instance: ComponentInstance) {
+  const elChanges = findAll("[data-change]", $wrapper);
+
+  if (elChanges.length) {
+    elChanges.forEach(($elOnchange) => {
+      let methodNameOnChange = $elOnchange.dataset.change;
+      if (methodNameOnChange) {
+        // ! Это для убирания префикса например header. - оно пока не мешает в случае если его нет вообще
+        const methodNameOnChangeWithoutPrefix =
+          deleteWordPrefix(methodNameOnChange);
+
+        const methodOnChange = instance[methodNameOnChangeWithoutPrefix];
+
+        $elOnchange.addEventListener("change", function (e) {
+          methodOnChange();
+        });
+      } else {
+        console.warn(
+          "The name of the data-click method was not found in: ",
+          $elOnchange
+        );
+      }
+    });
+  }
 }
 
 function handlerClassesReactive(
-    $wrapper: HTMLElement,
-    instance: ComponentInstance,
+  $wrapper: Wrapper,
+  instance: ComponentInstance
 ) {
-    if ($wrapper.dataset && $wrapper.dataset.class) {
-        handlerClassesReactiveSubFunc1($wrapper);
+  const elClasses = findAll("[data-class]", $wrapper);
+
+  elClasses.forEach(($el) => {
+    handlerClassesReactiveSubFunc1($el);
+  });
+
+  function handlerClassesReactiveSubFunc1($el: HTMLElement) {
+    let jsonString = $el.dataset.class;
+    if (jsonString) {
+      $el.removeAttribute("data-class");
+
+      let parsedJson;
+      try {
+        parsedJson = JSON.parse(jsonString);
+      } catch (error) {
+        console.error("Error at JSON string: " + jsonString);
+        console.error(error);
+      }
+
+      if (Array.isArray(parsedJson)) {
+        for (let i in parsedJson) {
+          let jsExpressionTernary = parsedJson[i];
+
+          const regex = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/;
+          const match = jsExpressionTernary.match(regex);
+
+          let jsNameWithPrefix = match[1];
+          const classNameTrue = match[2];
+          const classNameFalse = match[3];
+          const className = [classNameTrue, classNameFalse];
+
+          handlerClassesReactiveSubFunc2($el, className, jsNameWithPrefix);
+        }
+      } else if (isObject(parsedJson)) {
+        for (let className in parsedJson) {
+          let jsNameWithPrefix = parsedJson[className];
+
+          handlerClassesReactiveSubFunc2($el, className, jsNameWithPrefix);
+        }
+      }
+    } else {
+      console.warn("The data-class JSON string was not found in: ", $el);
+    }
+  }
+
+  function handlerClassesReactiveSubFunc2(
+    $el: HTMLElement,
+    className: string | string[],
+    jsNameWithPrefix: string
+  ) {
+    let isRevertVal = false;
+    if (jsNameWithPrefix[0] === "!") {
+      isRevertVal = true;
+      jsNameWithPrefix = jsNameWithPrefix.slice(1);
     }
 
-    const $elementsWithDataClasses = $wrapper.querySelectorAll(
-        "[data-class]",
-    ) as NodeListOf<HTMLElement>;
-    $elementsWithDataClasses.forEach(($el) => {
-        handlerClassesReactiveSubFunc1($el);
-    });
+    let jsExpression = deleteWordPrefix(jsNameWithPrefix);
 
-    function handlerClassesReactiveSubFunc1($el: HTMLElement) {
-        let jsonString = $el.dataset.class;
-        if (jsonString) {
-            $el.removeAttribute("data-class");
+    const isNotEqualExpression = jsExpression.includes("!=");
+    const isEqualExpression = jsExpression.includes("==");
+    if (isNotEqualExpression || isEqualExpression) {
+      if (isNotEqualExpression) {
+        const regex = /!=/;
+        const operator = "!=";
+        splitExpressionAndCompareAndUpdateClassesReactive(
+          jsExpression,
+          regex,
+          operator,
+          isRevertVal,
+          className,
+          $el
+        );
+      } else if (isEqualExpression) {
+        const regex = /==/;
+        const operator = "==";
+        splitExpressionAndCompareAndUpdateClassesReactive(
+          jsExpression,
+          regex,
+          operator,
+          isRevertVal,
+          className,
+          $el
+        );
+      }
+    } else {
+      const operator = "==";
+      const jsName = jsExpression;
+      const jsVal = true;
+      compareAndUpdateClassesReactive(
+        jsName,
+        jsVal,
+        operator,
+        isRevertVal,
+        className,
+        $el
+      );
+    }
+  }
 
-            let parsedJson;
-            try {
-                parsedJson = JSON.parse(jsonString);
-            } catch (error) {
-                console.error("Error at JSON string: " + jsonString);
-                console.error(error);
-            }
+  function splitExpressionAndCompareAndUpdateClassesReactive(
+    jsExpression: any,
+    regex: any,
+    operator: any,
+    isRevertVal: any,
+    className: any,
+    $el: any
+  ) {
+    const res = splitExpression(jsExpression, regex);
+    if (res && res.length === 2) {
+      const [jsName, jsVal] = res;
+      compareAndUpdateClassesReactive(
+        jsName,
+        jsVal,
+        operator,
+        isRevertVal,
+        className,
+        $el
+      );
+    }
+  }
 
-            if (Array.isArray(parsedJson)) {
-                for (let i in parsedJson) {
-                    let jsExpressionTernary = parsedJson[i];
+  function compareAndUpdateClassesReactive(
+    jsName: any,
+    jsVal: any,
+    operator: any,
+    isRevertVal: any,
+    className: any,
+    $el: any
+  ) {
+    const state = instance[jsName];
+    if (!state) {
+      showWarnIfRefNotFound($wrapper, jsName);
+    } else {
+      const isTrue = compare(state.value, jsVal, operator);
 
-                    const regex = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/;
-                    const match = jsExpressionTernary.match(regex);
+      toggleClass(isTrue, className, $el, isRevertVal);
+      const stateNameHash = stateNamesHashes.get(state);
 
-                    let jsNameWithPrefix = match[1];
-                    const classNameTrue = match[2];
-                    const classNameFalse = match[3];
-                    const className = [classNameTrue, classNameFalse];
+      emitter.on(stateNameHash, (newState: any) => {
+        const isTrue = compare(newState.value, jsVal, operator);
+        toggleClass(isTrue, className, $el, isRevertVal);
+      });
+    }
+  }
 
-                    handlerClassesReactiveSubFunc2(
-                        $el,
-                        className,
-                        jsNameWithPrefix,
-                    );
-                }
-            } else if (isObject(parsedJson)) {
-                for (let className in parsedJson) {
-                    let jsNameWithPrefix = parsedJson[className];
-
-                    handlerClassesReactiveSubFunc2(
-                        $el,
-                        className,
-                        jsNameWithPrefix,
-                    );
-                }
-            }
+  function toggleClass(
+    value: any,
+    className: string | string[],
+    where: HTMLElement,
+    isRevertVal = false
+  ) {
+    try {
+      const isTrue = (value && !isRevertVal) || (!value && isRevertVal);
+      if (typeof className === "string") {
+        if (isTrue) {
+          where.classList.add(className);
         } else {
-            console.warn("The data-class JSON string was not found in: ", $el);
+          where.classList.remove(className);
         }
-    }
-
-    function handlerClassesReactiveSubFunc2(
-        $el: HTMLElement,
-        className: string | string[],
-        jsNameWithPrefix: string,
-    ) {
-        let isRevertVal = false;
-        if (jsNameWithPrefix[0] === "!") {
-            isRevertVal = true;
-            jsNameWithPrefix = jsNameWithPrefix.slice(1);
-        }
-
-        let jsExpression = deleteWordPrefix(jsNameWithPrefix);
-
-        const isNotEqualExpression = jsExpression.includes("!=");
-        const isEqualExpression = jsExpression.includes("==");
-        if (isNotEqualExpression || isEqualExpression) {
-            if (isNotEqualExpression) {
-                const regex = /!=/;
-                const operator = "!=";
-                splitExpressionAndCompareAndUpdateClassesReactive(
-                    jsExpression,
-                    regex,
-                    operator,
-                    isRevertVal,
-                    className,
-                    $el,
-                );
-            } else if (isEqualExpression) {
-                const regex = /==/;
-                const operator = "==";
-                splitExpressionAndCompareAndUpdateClassesReactive(
-                    jsExpression,
-                    regex,
-                    operator,
-                    isRevertVal,
-                    className,
-                    $el,
-                );
-            }
+      } else if (Array.isArray(className)) {
+        const [classIfTrue, classIfFalse] = className;
+        if (isTrue) {
+          where.classList.remove(classIfFalse);
+          where.classList.add(classIfTrue);
         } else {
-            const operator = "==";
-            const jsName = jsExpression;
-            const jsVal = true;
-            compareAndUpdateClassesReactive(
-                jsName,
-                jsVal,
-                operator,
-                isRevertVal,
-                className,
-                $el,
-            );
+          where.classList.remove(classIfTrue);
+          where.classList.add(classIfFalse);
         }
+      }
+    } catch (error) {
+      console.error(error);
     }
-
-    function splitExpressionAndCompareAndUpdateClassesReactive(
-        jsExpression: any,
-        regex: any,
-        operator: any,
-        isRevertVal: any,
-        className: any,
-        $el: any,
-    ) {
-        const res = splitExpression(jsExpression, regex);
-        if (res && res.length === 2) {
-            const [jsName, jsVal] = res;
-            compareAndUpdateClassesReactive(
-                jsName,
-                jsVal,
-                operator,
-                isRevertVal,
-                className,
-                $el,
-            );
-        }
-    }
-
-    function compareAndUpdateClassesReactive(
-        jsName: any,
-        jsVal: any,
-        operator: any,
-        isRevertVal: any,
-        className: any,
-        $el: any,
-    ) {
-        const state = instance[jsName];
-        if (!state) {
-            showWarnIfRefNotFound($wrapper, jsName)
-        } else {
-            const isTrue = compare(state.value, jsVal, operator);
-
-            toggleClass(isTrue, className, $el, isRevertVal);
-            const stateNameHash = stateNamesHashes.get(state);
-
-            emitter.on(stateNameHash, (newState: any) => {
-                const isTrue = compare(newState.value, jsVal, operator);
-                toggleClass(isTrue, className, $el, isRevertVal);
-            });
-        }
-    }
-
-    function toggleClass(
-        value: any,
-        className: string | string[],
-        where: HTMLElement,
-        isRevertVal = false,
-    ) {
-        try {
-            const isTrue = (value && !isRevertVal) || (!value && isRevertVal);
-            if (typeof className === "string") {
-                if (isTrue) {
-                    where.classList.add(className);
-                } else {
-                    where.classList.remove(className);
-                }
-            } else if (Array.isArray(className)) {
-                const [classIfTrue, classIfFalse] = className;
-                if (isTrue) {
-                    where.classList.remove(classIfFalse);
-                    where.classList.add(classIfTrue);
-                } else {
-                    where.classList.remove(classIfTrue);
-                    where.classList.add(classIfFalse);
-                }
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
+  }
 }
 
-function showWarnIfRefNotFound($wrapper, jsName) {
-    const instanceId = '#'+$wrapper.getAttribute('id') || '.'+$wrapper.getAttribute('class')
-    console.warn(`Ref ${jsName} is not exists at ${instanceId}. Perhaps the component is located in another component.`);
+function showWarnIfRefNotFound($wrapper: Wrapper, jsName: string) {
+  const instanceId =
+    "#" + $wrapper.getAttribute("id") || "." + $wrapper.getAttribute("class");
+  console.warn(
+    `Ref ${jsName} is not exists at ${instanceId}. Perhaps the component is located in another component.`
+  );
 }
 
 // ! tools:
 function isObject(value: any) {
-    return value !== null && typeof value === "object";
+  return value !== null && typeof value === "object";
 }
 
 function deleteWordPrefix(strWithprefixWithDot: string) {
-    return strWithprefixWithDot.replace(/^\w+\./, "");
+  return strWithprefixWithDot.replace(/^\w+\./, "");
 }
 
 function splitExpression(
-    expression: string,
-    regex: RegExp,
+  expression: string,
+  regex: RegExp
 ): [string, string] | null {
-    const parts = expression.split(regex);
+  const parts = expression.split(regex);
 
-    if (parts.length === 2) {
-        return [parts[0].trim(), parts[1].trim()];
-    }
+  if (parts.length === 2) {
+    return [parts[0].trim(), parts[1].trim()];
+  }
 
-    return null;
+  return null;
 }
 
 function compare(value1: any, value2: any, operator: string) {
-    switch (operator) {
-        case "!=":
-            return value1 != value2;
-        case "==":
-            return value1 == value2;
-        case "<":
-            return value1 < value2;
-        case ">":
-            return value1 > value2;
-        case "<=":
-            return value1 <= value2;
-        case ">=":
-            return value1 >= value2;
-        default:
-            throw new Error("Invalid operator");
-    }
+  switch (operator) {
+    case "!=":
+      return value1 != value2;
+    case "==":
+      return value1 == value2;
+    case "<":
+      return value1 < value2;
+    case ">":
+      return value1 > value2;
+    case "<=":
+      return value1 <= value2;
+    case ">=":
+      return value1 >= value2;
+    default:
+      throw new Error("Invalid operator");
+  }
+}
+
+function findAll(selector: string, $wrapper: HTMLElement) {
+  const els = $wrapper.querySelectorAll(selector) as NodeListOf<
+    HTMLElement | HTMLInputElement
+  >;
+
+  const elsAll = [...Array.from(els)];
+
+  if ($wrapper.dataset && $wrapper.dataset.ref) {
+    elsAll.push($wrapper);
+  }
+
+  return elsAll;
 }
