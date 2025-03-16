@@ -60,7 +60,7 @@ export function createScope(
             window[scopeId] = scopeInstance;
         }
     } else {
-        throw Error("Нет wrapper: #" + scopeId);
+        console.warn("Not found wrapper: #" + scopeId);
     }
 }
 
@@ -95,7 +95,7 @@ export function createComponent(wrapperClass: string, component: () => {}) {
                 handlerInputReactive($wrapper, componentInstance);
             }
         } else {
-            throw Error("Нет wrapper: ." + wrapperClass);
+            console.warn("Not found wrapper: ." + wrapperClass);
         }
     }
 }

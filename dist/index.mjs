@@ -22,7 +22,7 @@ function O(e, n, o = "") {
     const s = n();
     b(t, s), R(t, s), N(t, s), I(t, s), j(t, s), o !== "" ? window[o] = s : window[e] = s;
   } else
-    throw Error("Нет wrapper: #" + e);
+    console.warn("Not found wrapper: #" + e);
 }
 function W(e, n) {
   const o = document.getElementsByClassName(
@@ -36,7 +36,7 @@ function W(e, n) {
         s
       ), I(t, s), j(t, s));
     } else
-      throw Error("Нет wrapper: ." + e);
+      console.warn("Not found wrapper: ." + e);
 }
 function D(e) {
   const n = `state_${crypto.randomUUID()}`;
@@ -49,33 +49,33 @@ function D(e) {
   return w.set(t, n), v.emit(n, t), t;
 }
 function k(e, n) {
-  E("data-ref", e).forEach((t) => {
+  x("data-ref", e).forEach((t) => {
     const s = t.getAttribute("data-ref");
     s ? n[s].value = t : console.warn("The data-ref name was not found in: ", t);
   });
 }
 function N(e, n) {
-  E("data-value", e).forEach((t) => {
+  x("data-value", e).forEach((t) => {
     if (t instanceof HTMLInputElement) {
       const s = t.getAttribute("data-value") || null;
       if (s) {
-        let u = x(s);
+        let u = A(s);
         const m = n[u];
         t.value = m.value;
         const r = w.get(m);
-        v.on(r, (i) => {
-          t.value = i.value;
+        v.on(r, (c) => {
+          t.value = c.value;
         });
       }
     }
   });
 }
 function b(e, n) {
-  const o = E("data-click", e);
+  const o = x("data-click", e);
   o.length && o.forEach((t) => {
     let s = t.getAttribute("data-click");
     if (s) {
-      const h = x(s), u = n[h];
+      const h = A(s), u = n[h];
       t.addEventListener("click", function(m) {
         u(m);
       });
@@ -87,12 +87,12 @@ function b(e, n) {
   });
 }
 function I(e, n) {
-  const o = E("data-change", e);
+  const o = x("data-change", e);
   o.length && o.forEach((t) => {
     if (t) {
       let s = t.getAttribute("data-change");
       if (s) {
-        const h = x(s), u = n[h];
+        const h = A(s), u = n[h];
         u && t.addEventListener("change", function(m) {
           u(m);
         });
@@ -105,12 +105,12 @@ function I(e, n) {
   });
 }
 function j(e, n) {
-  const o = E("data-input", e);
+  const o = x("data-input", e);
   o.length && o.forEach((t) => {
     if (t) {
       let s = t.getAttribute("data-input");
       if (s) {
-        const h = x(s), u = n[h];
+        const h = A(s), u = n[h];
         u && t.addEventListener("input", function(m) {
           u(m);
         });
@@ -123,106 +123,106 @@ function j(e, n) {
   });
 }
 function R(e, n) {
-  E("data-class", e).forEach((r) => {
+  x("data-class", e).forEach((r) => {
     t(r);
   });
   function t(r) {
-    let i = r.getAttribute("data-class");
-    if (i) {
+    let c = r.getAttribute("data-class");
+    if (c) {
       r.removeAttribute("data-class");
       let a;
       try {
-        a = JSON.parse(i);
-      } catch (c) {
-        console.error("Error at JSON string: " + i), console.error(c);
+        a = JSON.parse(c);
+      } catch (i) {
+        console.error("Error at JSON string: " + c), console.error(i);
       }
       if (Array.isArray(a))
-        for (let c in a) {
-          let l = a[c];
+        for (let i in a) {
+          let l = a[i];
           const d = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, f = l.match(d);
           let p = f[1];
-          const g = f[2], A = f[3];
+          const g = f[2], E = f[3];
           s(
             r,
-            [g, A],
+            [g, E],
             p
           );
         }
       else if (L(a))
-        for (let c in a) {
-          let l = a[c];
+        for (let i in a) {
+          let l = a[i];
           s(
             r,
-            c,
+            i,
             l
           );
         }
     } else
       console.warn("The data-class JSON string was not found in: ", r);
   }
-  function s(r, i, a) {
-    let c = !1;
-    a[0] === "!" && (c = !0, a = a.slice(1));
-    let l = x(a);
+  function s(r, c, a) {
+    let i = !1;
+    a[0] === "!" && (i = !0, a = a.slice(1));
+    let l = A(a);
     const d = l.includes("!="), f = l.includes("==");
     d || f ? d ? h(
       l,
       /!=/,
       "!=",
-      c,
       i,
+      c,
       r
     ) : f && h(
       l,
       /==/,
       "==",
-      c,
       i,
+      c,
       r
     ) : u(
       l,
       !0,
       "==",
-      c,
       i,
+      c,
       r
     );
   }
-  function h(r, i, a, c, l, d) {
-    const f = P(r, i);
+  function h(r, c, a, i, l, d) {
+    const f = P(r, c);
     if (f && f.length === 2) {
       const [p, g] = f;
       u(
         p,
         g,
         a,
-        c,
+        i,
         l,
         d
       );
     }
   }
-  function u(r, i, a, c, l, d) {
+  function u(r, c, a, i, l, d) {
     const f = n[r];
     if (!f)
       S(e, r);
     else {
-      const p = y(f.value, i, a);
-      m(p, l, d, c);
+      const p = y(f.value, c, a);
+      m(p, l, d, i);
       const g = w.get(f);
-      v.on(g, (A) => {
-        const C = y(A.value, i, a);
-        m(C, l, d, c);
+      v.on(g, (E) => {
+        const C = y(E.value, c, a);
+        m(C, l, d, i);
       });
     }
   }
-  function m(r, i, a, c = !1) {
+  function m(r, c, a, i = !1) {
     try {
-      const l = r && !c || !r && c;
-      if (typeof i == "string")
-        l ? a.classList.add(i) : a.classList.remove(i);
-      else if (Array.isArray(i)) {
-        const [d, f] = i;
+      const l = r && !i || !r && i;
+      if (typeof c == "string")
+        l ? a.classList.add(c) : a.classList.remove(c);
+      else if (Array.isArray(c)) {
+        const [d, f] = c;
         l ? (a.classList.remove(f), a.classList.add(d)) : (a.classList.remove(d), a.classList.add(f));
       }
     } catch (l) {
@@ -239,7 +239,7 @@ function S(e, n) {
 function L(e) {
   return e !== null && typeof e == "object";
 }
-function x(e) {
+function A(e) {
   return e.replace(/^\w+\./, "");
 }
 function P(e, n) {
@@ -264,7 +264,7 @@ function y(e, n, o) {
       throw new Error("Invalid operator");
   }
 }
-function E(e, n) {
+function x(e, n) {
   const o = n.querySelectorAll(`[${e}]`), t = [...Array.from(o)];
   return n.dataset && n.getAttribute(e) && t.push(n), t;
 }
