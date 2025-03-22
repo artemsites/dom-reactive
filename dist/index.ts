@@ -154,12 +154,13 @@ function handlerInputDataValueReactive(
                 const jsExpressionWithPrefix: string = dataValue;
                 let jsExpression = deleteWordPrefix(jsExpressionWithPrefix);
                 const state = instance[jsExpression];
-
-                $dataValue.value = state.value;
-                const stateNameHash = stateNamesHashes.get(state);
-                emitter.on(stateNameHash, (newState: any) => {
-                    $dataValue.value = newState.value;
-                });
+                if (state) {
+                    $dataValue.value = state.value;
+                    const stateNameHash = stateNamesHashes.get(state);
+                    emitter.on(stateNameHash, (newState: any) => {
+                        $dataValue.value = newState.value;
+                    });
+                }
             }
         }
     });

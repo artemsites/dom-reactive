@@ -42,8 +42,8 @@ function D(e) {
   const n = `state_${crypto.randomUUID()}`;
   let o = { value: e };
   const t = new Proxy(o, {
-    set(s, h, u) {
-      return h === "value" ? (s.value !== u && (s.value = u, v.emit(n, s)), !0) : !1;
+    set(s, m, u) {
+      return m === "value" ? (s.value !== u && (s.value = u, v.emit(n, s)), !0) : !1;
     }
   });
   return w.set(t, n), v.emit(n, t), t;
@@ -60,12 +60,14 @@ function b(e, n) {
       const s = t.getAttribute("data-value") || null;
       if (s) {
         let u = A(s);
-        const m = n[u];
-        t.value = m.value;
-        const r = w.get(m);
-        v.on(r, (i) => {
-          t.value = i.value;
-        });
+        const d = n[u];
+        if (d) {
+          t.value = d.value;
+          const r = w.get(d);
+          v.on(r, (i) => {
+            t.value = i.value;
+          });
+        }
       }
     }
   });
@@ -75,9 +77,9 @@ function I(e, n) {
   o.length && o.forEach((t) => {
     let s = t.getAttribute("data-click");
     if (s) {
-      const h = A(s), u = n[h];
-      u && t.addEventListener("click", function(m) {
-        u(m);
+      const m = A(s), u = n[m];
+      u && t.addEventListener("click", function(d) {
+        u(d);
       });
     } else
       console.warn(
@@ -92,9 +94,9 @@ function j(e, n) {
     if (t) {
       let s = t.getAttribute("data-change");
       if (s) {
-        const h = A(s), u = n[h];
-        u && t.addEventListener("change", function(m) {
-          u(m);
+        const m = A(s), u = n[m];
+        u && t.addEventListener("change", function(d) {
+          u(d);
         });
       }
     } else
@@ -110,9 +112,9 @@ function R(e, n) {
     if (t) {
       let s = t.getAttribute("data-input");
       if (s) {
-        const h = A(s), u = n[h];
-        u && t.addEventListener("input", function(m) {
-          u(m);
+        const m = A(s), u = n[m];
+        u && t.addEventListener("input", function(d) {
+          u(d);
         });
       }
     } else
@@ -139,7 +141,7 @@ function L(e, n) {
       if (Array.isArray(a))
         for (let c in a) {
           let l = a[c];
-          const d = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, f = l.match(d);
+          const h = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, f = l.match(h);
           let p = f[1];
           const g = f[2], E = f[3];
           s(
@@ -164,15 +166,15 @@ function L(e, n) {
     let c = !1;
     a[0] === "!" && (c = !0, a = a.slice(1));
     let l = A(a);
-    const d = l.includes("!="), f = l.includes("==");
-    d || f ? d ? h(
+    const h = l.includes("!="), f = l.includes("==");
+    h || f ? h ? m(
       l,
       /!=/,
       "!=",
       c,
       i,
       r
-    ) : f && h(
+    ) : f && m(
       l,
       /==/,
       "==",
@@ -188,7 +190,7 @@ function L(e, n) {
       r
     );
   }
-  function h(r, i, a, c, l, d) {
+  function m(r, i, a, c, l, h) {
     const f = P(r, i);
     if (f && f.length === 2) {
       const [p, g] = f;
@@ -198,32 +200,32 @@ function L(e, n) {
         a,
         c,
         l,
-        d
+        h
       );
     }
   }
-  function u(r, i, a, c, l, d) {
+  function u(r, i, a, c, l, h) {
     const f = n[r];
     if (!f)
       S(e, r);
     else {
       const p = y(f.value, i, a);
-      m(p, l, d, c);
+      d(p, l, h, c);
       const g = w.get(f);
       v.on(g, (E) => {
         const C = y(E.value, i, a);
-        m(C, l, d, c);
+        d(C, l, h, c);
       });
     }
   }
-  function m(r, i, a, c = !1) {
+  function d(r, i, a, c = !1) {
     try {
       const l = r && !c || !r && c;
       if (typeof i == "string")
         l ? a.classList.add(i) : a.classList.remove(i);
       else if (Array.isArray(i)) {
-        const [d, f] = i;
-        l ? (a.classList.remove(f), a.classList.add(d)) : (a.classList.remove(d), a.classList.add(f));
+        const [h, f] = i;
+        l ? (a.classList.remove(f), a.classList.add(h)) : (a.classList.remove(h), a.classList.add(f));
       }
     } catch (l) {
       console.error(l);
