@@ -9,7 +9,7 @@ declare global {
         [key: string]: any;
     }
 }
-export declare function createScope(scopeId: string, scope: () => ComponentInstance, alias?: string): void;
-export declare function createComponent(wrapperClass: string, component: () => {}): void;
+export declare function createScope(scopeId: string, scope: (e: any) => ComponentInstance, alias?: string): void;
+export declare function createComponent(wrapperClass: string, component: (e: any) => {}): void;
 export declare function ref(defaultValue: any): State;
 export {};

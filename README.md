@@ -228,3 +228,5 @@ data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? 
 ### 1.7.0 Added processing `input[data-input]`.
 
 ### 1.7.2 - add data-ref to createScope & fix bugs.
+
+### 1.7.4 - add pass wrapper as parameter of init function.

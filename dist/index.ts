@@ -31,13 +31,13 @@ let stateNamesHashes = new Map();
 
 export function createScope(
     scopeId: string,
-    scope: () => ComponentInstance,
+    scope: (e) => ComponentInstance,
     alias: string = ""
 ) {
     const $wrapper = document.getElementById(scopeId);
 
     if ($wrapper) {
-        const scopeInstance = scope();
+        const scopeInstance = scope($wrapper);
 
         // @note handle data-ref
         handlerRefsInDom($wrapper as Wrapper, scopeInstance);
@@ -67,13 +67,13 @@ export function createScope(
     }
 }
 
-export function createComponent(wrapperClass: string, component: () => {}) {
+export function createComponent(wrapperClass: string, component: (e) => {}) {
     const wrappers = document.getElementsByClassName(
         wrapperClass
     ) as HTMLCollection;
     for (let $wrapper of wrappers) {
         if ($wrapper) {
-            const componentInstance: ComponentInstance = component();
+            const componentInstance: ComponentInstance = component($wrapper);
             if (isObject(componentInstance)) {
                 // @note handle data-ref
                 handlerRefsInDom($wrapper as Wrapper, componentInstance);

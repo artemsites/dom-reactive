@@ -19,7 +19,7 @@ let w = /* @__PURE__ */ new Map();
 function O(e, n, o = "") {
   const t = document.getElementById(e);
   if (t) {
-    const s = n();
+    const s = n(t);
     N(t, s), I(t, s), L(t, s), b(t, s), j(t, s), R(t, s), o !== "" ? window[o] = s : window[e] = s;
   } else
     console.warn("Not found wrapper: #" + e);
@@ -30,7 +30,7 @@ function W(e, n) {
   );
   for (let t of o)
     if (t) {
-      const s = n();
+      const s = n(t);
       T(s) && (N(t, s), I(t, s), L(t, s), b(
         t,
         s
