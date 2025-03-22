@@ -226,3 +226,5 @@ data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? 
 ### 1.6.0 Added processing `input[data-change]` and add processing attributes on the root wrapper of a component.
 
 ### 1.7.0 Added processing `input[data-input]`.
+
+### 1.7.2 - add data-ref to createScope & fix bugs.

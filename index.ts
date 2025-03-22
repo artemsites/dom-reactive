@@ -39,6 +39,9 @@ export function createScope(
     if ($wrapper) {
         const scopeInstance = scope();
 
+        // @note handle data-ref
+        handlerRefsInDom($wrapper as Wrapper, scopeInstance);
+
         // @note handle data-click
         handlerClickReactive($wrapper, scopeInstance);
 
@@ -129,7 +132,7 @@ function handlerRefsInDom($wrapper: Wrapper, instance: ComponentInstance) {
 
     refsInDomAll.forEach(($refEl) => {
         const refName = $refEl.getAttribute("data-ref");
-        if (refName) {
+        if (refName && instance[refName]) {
             instance[refName].value = $refEl;
         } else {
             console.warn("The data-ref name was not found in: ", $refEl);
@@ -175,9 +178,11 @@ function handlerClickReactive($wrapper: Wrapper, instance: ComponentInstance) {
                     deleteWordPrefix(methodNameOnClick);
 
                 const methodOnClick = instance[methodNameOnClickWithoutPrefix];
-                $elOnClick.addEventListener("click", function (e) {
-                    methodOnClick(e);
-                });
+                if (methodOnClick) {
+                    $elOnClick.addEventListener("click", function (e) {
+                        methodOnClick(e);
+                    });
+                }
             } else {
                 console.warn(
                     "The name of the data-click method was not found in: ",
