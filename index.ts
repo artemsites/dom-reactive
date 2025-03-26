@@ -9,6 +9,8 @@
  */
 import mitt from "mitt";
 
+export const emitter = mitt();
+
 type Wrapper = any;
 
 interface ComponentInstance {
@@ -25,9 +27,14 @@ declare global {
     }
 }
 
-const emitter = mitt();
-
 let stateNamesHashes = new Map();
+
+let createUUID = ()=>{}
+if (window && typeof window.crypto.randomUUID === 'function') {
+    createUUID = window.crypto.randomUUID.bind(window.crypto)
+} else {
+    createUUID = generateUniqueId
+}
 
 export function createScope(
     scopeId: string,
@@ -104,7 +111,7 @@ export function createComponent(wrapperClass: string, component: (e) => {}) {
 }
 
 export function ref(defaultValue: any): State {
-    const stateNameHash = `state_${crypto.randomUUID()}`;
+    const stateNameHash = `state_${createUUID()}`;
     let state: State = { value: defaultValue };
 
     const proxyState = new Proxy<State>(state, {
@@ -500,4 +507,13 @@ function findAllByAttr(attr: string, $wrapper: HTMLElement) {
     }
 
     return elsAll;
+}
+
+function generateUniqueId() {
+    // 4 - version UUID
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8); // variant UUID
+        return v.toString(16);
+    });
 }

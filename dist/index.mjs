@@ -14,13 +14,15 @@ function k(e) {
     });
   } };
 }
-const v = k();
-let w = /* @__PURE__ */ new Map();
+const E = k();
+let v = /* @__PURE__ */ new Map(), y = () => {
+};
+window && typeof window.crypto.randomUUID == "function" ? y = window.crypto.randomUUID.bind(window.crypto) : y = P;
 function O(e, n, o = "") {
   const t = document.getElementById(e);
   if (t) {
     const s = n(t);
-    N(t, s), I(t, s), L(t, s), b(t, s), j(t, s), R(t, s), o !== "" ? window[o] = s : window[e] = s;
+    N(t, s), j(t, s), S(t, s), b(t, s), R(t, s), L(t, s), o !== "" ? window[o] = s : window[e] = s;
   } else
     console.warn("Not found wrapper: #" + e);
 }
@@ -31,40 +33,40 @@ function W(e, n) {
   for (let t of o)
     if (t) {
       const s = n(t);
-      T(s) && (N(t, s), I(t, s), L(t, s), b(
+      T(s) && (N(t, s), j(t, s), S(t, s), b(
         t,
         s
-      ), j(t, s), R(t, s));
+      ), R(t, s), L(t, s));
     } else
       console.warn("Not found wrapper: ." + e);
 }
-function D(e) {
-  const n = `state_${crypto.randomUUID()}`;
+function F(e) {
+  const n = `state_${y()}`;
   let o = { value: e };
   const t = new Proxy(o, {
-    set(s, m, u) {
-      return m === "value" ? (s.value !== u && (s.value = u, v.emit(n, s)), !0) : !1;
+    set(s, h, u) {
+      return h === "value" ? (s.value !== u && (s.value = u, E.emit(n, s)), !0) : !1;
     }
   });
-  return w.set(t, n), v.emit(n, t), t;
+  return v.set(t, n), E.emit(n, t), t;
 }
 function N(e, n) {
-  x("data-ref", e).forEach((t) => {
+  g("data-ref", e).forEach((t) => {
     const s = t.getAttribute("data-ref");
     s && n[s] ? n[s].value = t : console.warn("The data-ref name was not found in: ", t);
   });
 }
 function b(e, n) {
-  x("data-value", e).forEach((t) => {
+  g("data-value", e).forEach((t) => {
     if (t instanceof HTMLInputElement) {
       const s = t.getAttribute("data-value") || null;
       if (s) {
-        let u = A(s);
+        let u = w(s);
         const d = n[u];
         if (d) {
           t.value = d.value;
-          const r = w.get(d);
-          v.on(r, (i) => {
+          const r = v.get(d);
+          E.on(r, (i) => {
             t.value = i.value;
           });
         }
@@ -72,12 +74,12 @@ function b(e, n) {
     }
   });
 }
-function I(e, n) {
-  const o = x("data-click", e);
+function j(e, n) {
+  const o = g("data-click", e);
   o.length && o.forEach((t) => {
     let s = t.getAttribute("data-click");
     if (s) {
-      const m = A(s), u = n[m];
+      const h = w(s), u = n[h];
       u && t.addEventListener("click", function(d) {
         u(d);
       });
@@ -88,13 +90,13 @@ function I(e, n) {
       );
   });
 }
-function j(e, n) {
-  const o = x("data-change", e);
+function R(e, n) {
+  const o = g("data-change", e);
   o.length && o.forEach((t) => {
     if (t) {
       let s = t.getAttribute("data-change");
       if (s) {
-        const m = A(s), u = n[m];
+        const h = w(s), u = n[h];
         u && t.addEventListener("change", function(d) {
           u(d);
         });
@@ -106,13 +108,13 @@ function j(e, n) {
       );
   });
 }
-function R(e, n) {
-  const o = x("data-input", e);
+function L(e, n) {
+  const o = g("data-input", e);
   o.length && o.forEach((t) => {
     if (t) {
       let s = t.getAttribute("data-input");
       if (s) {
-        const m = A(s), u = n[m];
+        const h = w(s), u = n[h];
         u && t.addEventListener("input", function(d) {
           u(d);
         });
@@ -124,8 +126,8 @@ function R(e, n) {
       );
   });
 }
-function L(e, n) {
-  x("data-class", e).forEach((r) => {
+function S(e, n) {
+  g("data-class", e).forEach((r) => {
     t(r);
   });
   function t(r) {
@@ -141,13 +143,13 @@ function L(e, n) {
       if (Array.isArray(a))
         for (let c in a) {
           let l = a[c];
-          const h = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, f = l.match(h);
-          let p = f[1];
-          const g = f[2], E = f[3];
+          const m = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, f = l.match(m);
+          let x = f[1];
+          const p = f[2], A = f[3];
           s(
             r,
-            [g, E],
-            p
+            [p, A],
+            x
           );
         }
       else if (T(a))
@@ -165,16 +167,16 @@ function L(e, n) {
   function s(r, i, a) {
     let c = !1;
     a[0] === "!" && (c = !0, a = a.slice(1));
-    let l = A(a);
-    const h = l.includes("!="), f = l.includes("==");
-    h || f ? h ? m(
+    let l = w(a);
+    const m = l.includes("!="), f = l.includes("==");
+    m || f ? m ? h(
       l,
       /!=/,
       "!=",
       c,
       i,
       r
-    ) : f && m(
+    ) : f && h(
       l,
       /==/,
       "==",
@@ -190,31 +192,31 @@ function L(e, n) {
       r
     );
   }
-  function m(r, i, a, c, l, h) {
-    const f = P(r, i);
+  function h(r, i, a, c, l, m) {
+    const f = D(r, i);
     if (f && f.length === 2) {
-      const [p, g] = f;
+      const [x, p] = f;
       u(
+        x,
         p,
-        g,
         a,
         c,
         l,
-        h
+        m
       );
     }
   }
-  function u(r, i, a, c, l, h) {
+  function u(r, i, a, c, l, m) {
     const f = n[r];
     if (!f)
-      S(e, r);
+      U(e, r);
     else {
-      const p = y(f.value, i, a);
-      d(p, l, h, c);
-      const g = w.get(f);
-      v.on(g, (E) => {
-        const C = y(E.value, i, a);
-        d(C, l, h, c);
+      const x = I(f.value, i, a);
+      d(x, l, m, c);
+      const p = v.get(f);
+      E.on(p, (A) => {
+        const C = I(A.value, i, a);
+        d(C, l, m, c);
       });
     }
   }
@@ -224,15 +226,15 @@ function L(e, n) {
       if (typeof i == "string")
         l ? a.classList.add(i) : a.classList.remove(i);
       else if (Array.isArray(i)) {
-        const [h, f] = i;
-        l ? (a.classList.remove(f), a.classList.add(h)) : (a.classList.remove(h), a.classList.add(f));
+        const [m, f] = i;
+        l ? (a.classList.remove(f), a.classList.add(m)) : (a.classList.remove(m), a.classList.add(f));
       }
     } catch (l) {
       console.error(l);
     }
   }
 }
-function S(e, n) {
+function U(e, n) {
   const o = "#" + e.getAttribute("id") || "." + e.getAttribute("class");
   console.warn(
     `Ref ${n} is not exists at ${o}. Perhaps the component is located in another component.`
@@ -241,14 +243,14 @@ function S(e, n) {
 function T(e) {
   return e !== null && typeof e == "object";
 }
-function A(e) {
+function w(e) {
   return e.replace(/^\w+\./, "");
 }
-function P(e, n) {
+function D(e, n) {
   const o = e.split(n);
   return o.length === 2 ? [o[0].trim(), o[1].trim()] : null;
 }
-function y(e, n, o) {
+function I(e, n, o) {
   switch (o) {
     case "!=":
       return e != n;
@@ -266,13 +268,20 @@ function y(e, n, o) {
       throw new Error("Invalid operator");
   }
 }
-function x(e, n) {
+function g(e, n) {
   const o = n.querySelectorAll(`[${e}]`), t = [...Array.from(o)];
   return n.dataset && n.getAttribute(e) && t.push(n), t;
+}
+function P() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(e) {
+    const n = Math.random() * 16 | 0;
+    return (e === "x" ? n : n & 3 | 8).toString(16);
+  });
 }
 export {
   W as createComponent,
   O as createScope,
-  D as ref
+  E as emitter,
+  F as ref
 };
 //# sourceMappingURL=index.mjs.map
