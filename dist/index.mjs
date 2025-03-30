@@ -127,7 +127,6 @@ function L(e, n) {
   });
 }
 function S(e, n) {
-  debugger;
   g("data-class", e).forEach((r) => {
     t(r);
   });
@@ -269,7 +268,6 @@ function I(e, n, o) {
   }
 }
 function g(e, n) {
-  console.log("$wrapper: ", n);
   const o = n.querySelectorAll(`[${e}]`), t = [...Array.from(o)];
   return n.dataset && n.getAttribute(e) && t.push(n), t;
 }

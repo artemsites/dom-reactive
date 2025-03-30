@@ -262,7 +262,6 @@ function handlerClassesReactive(
     $wrapper: Wrapper,
     instance: ComponentInstance
 ) {
-    debugger
     const elClasses = findAllByAttr("data-class", $wrapper);
 
     elClasses.forEach(($el) => {
@@ -498,7 +497,6 @@ function compare(value1: any, value2: any, operator: string) {
 }
 
 function findAllByAttr(attr: string, $wrapper: HTMLElement) {
-    console.log('$wrapper: ', $wrapper)
     const els = $wrapper.querySelectorAll(`[${attr}]`) as NodeListOf<
         HTMLElement | HTMLInputElement
     >;
