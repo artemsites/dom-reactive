@@ -262,6 +262,7 @@ function handlerClassesReactive(
     $wrapper: Wrapper,
     instance: ComponentInstance
 ) {
+    debugger
     const elClasses = findAllByAttr("data-class", $wrapper);
 
     elClasses.forEach(($el) => {
@@ -271,7 +272,8 @@ function handlerClassesReactive(
     function handlerClassesReactiveSubFunc1($el: HTMLElement) {
         let jsonString = $el.getAttribute('data-class');
         if (jsonString) {
-            $el.removeAttribute("data-class");
+            // @todo deletion is necessary in another place so that one component does not delete the data-class of another component.
+            // $el.removeAttribute("data-class");
 
             let parsedJson;
             try {
@@ -496,6 +498,7 @@ function compare(value1: any, value2: any, operator: string) {
 }
 
 function findAllByAttr(attr: string, $wrapper: HTMLElement) {
+    console.log('$wrapper: ', $wrapper)
     const els = $wrapper.querySelectorAll(`[${attr}]`) as NodeListOf<
         HTMLElement | HTMLInputElement
     >;

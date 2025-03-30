@@ -232,3 +232,5 @@ data-class='["header.isIdActive == 1 ? test1 : test2","header.isIdActive != 1 ? 
 ### 1.7.4 - add pass wrapper as parameter of init function.
 
 ### 1.7.5 - fixing the build bug with `window.crypto.randomUUID` & added `export const emitter = mitt()` so that you can use the same mitt in the context of components and scopes.
+
+### 1.8.0 - fix bug with the removal of the data-class component from.

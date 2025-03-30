@@ -44,8 +44,8 @@ function F(e) {
   const n = `state_${y()}`;
   let o = { value: e };
   const t = new Proxy(o, {
-    set(s, h, u) {
-      return h === "value" ? (s.value !== u && (s.value = u, E.emit(n, s)), !0) : !1;
+    set(s, m, u) {
+      return m === "value" ? (s.value !== u && (s.value = u, E.emit(n, s)), !0) : !1;
     }
   });
   return v.set(t, n), E.emit(n, t), t;
@@ -79,7 +79,7 @@ function j(e, n) {
   o.length && o.forEach((t) => {
     let s = t.getAttribute("data-click");
     if (s) {
-      const h = w(s), u = n[h];
+      const m = w(s), u = n[m];
       u && t.addEventListener("click", function(d) {
         u(d);
       });
@@ -96,7 +96,7 @@ function R(e, n) {
     if (t) {
       let s = t.getAttribute("data-change");
       if (s) {
-        const h = w(s), u = n[h];
+        const m = w(s), u = n[m];
         u && t.addEventListener("change", function(d) {
           u(d);
         });
@@ -114,7 +114,7 @@ function L(e, n) {
     if (t) {
       let s = t.getAttribute("data-input");
       if (s) {
-        const h = w(s), u = n[h];
+        const m = w(s), u = n[m];
         u && t.addEventListener("input", function(d) {
           u(d);
         });
@@ -127,13 +127,13 @@ function L(e, n) {
   });
 }
 function S(e, n) {
+  debugger;
   g("data-class", e).forEach((r) => {
     t(r);
   });
   function t(r) {
     let i = r.getAttribute("data-class");
     if (i) {
-      r.removeAttribute("data-class");
       let a;
       try {
         a = JSON.parse(i);
@@ -143,7 +143,7 @@ function S(e, n) {
       if (Array.isArray(a))
         for (let c in a) {
           let l = a[c];
-          const m = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, f = l.match(m);
+          const h = /(.+?)\s*\?\s*(.+?)\s*:\s*(.+)/, f = l.match(h);
           let x = f[1];
           const p = f[2], A = f[3];
           s(
@@ -168,15 +168,15 @@ function S(e, n) {
     let c = !1;
     a[0] === "!" && (c = !0, a = a.slice(1));
     let l = w(a);
-    const m = l.includes("!="), f = l.includes("==");
-    m || f ? m ? h(
+    const h = l.includes("!="), f = l.includes("==");
+    h || f ? h ? m(
       l,
       /!=/,
       "!=",
       c,
       i,
       r
-    ) : f && h(
+    ) : f && m(
       l,
       /==/,
       "==",
@@ -192,7 +192,7 @@ function S(e, n) {
       r
     );
   }
-  function h(r, i, a, c, l, m) {
+  function m(r, i, a, c, l, h) {
     const f = D(r, i);
     if (f && f.length === 2) {
       const [x, p] = f;
@@ -202,21 +202,21 @@ function S(e, n) {
         a,
         c,
         l,
-        m
+        h
       );
     }
   }
-  function u(r, i, a, c, l, m) {
+  function u(r, i, a, c, l, h) {
     const f = n[r];
     if (!f)
       U(e, r);
     else {
       const x = I(f.value, i, a);
-      d(x, l, m, c);
+      d(x, l, h, c);
       const p = v.get(f);
       E.on(p, (A) => {
         const C = I(A.value, i, a);
-        d(C, l, m, c);
+        d(C, l, h, c);
       });
     }
   }
@@ -226,8 +226,8 @@ function S(e, n) {
       if (typeof i == "string")
         l ? a.classList.add(i) : a.classList.remove(i);
       else if (Array.isArray(i)) {
-        const [m, f] = i;
-        l ? (a.classList.remove(f), a.classList.add(m)) : (a.classList.remove(m), a.classList.add(f));
+        const [h, f] = i;
+        l ? (a.classList.remove(f), a.classList.add(h)) : (a.classList.remove(h), a.classList.add(f));
       }
     } catch (l) {
       console.error(l);
@@ -269,6 +269,7 @@ function I(e, n, o) {
   }
 }
 function g(e, n) {
+  console.log("$wrapper: ", n);
   const o = n.querySelectorAll(`[${e}]`), t = [...Array.from(o)];
   return n.dataset && n.getAttribute(e) && t.push(n), t;
 }
